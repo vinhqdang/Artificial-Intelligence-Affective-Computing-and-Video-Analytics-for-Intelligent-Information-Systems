@@ -1,0 +1,26 @@
+{
+ "chosen": "QD",
+ "rule": "score = mean S5 detection rate over degraded conditions minus S4 share of streams with any false mark",
+ "scores": {
+  "CONTENT": {
+   "mean_S5_detection": 0.9318181818181818,
+   "S4_share_any_false": 0.6833333333333333,
+   "score": 0.24848484848484842
+  },
+  "QD": {
+   "mean_S5_detection": 0.981060606060606,
+   "S4_share_any_false": 0.125,
+   "score": 0.856060606060606
+  },
+  "SPK": {
+   "mean_S5_detection": 0.0022727272727272635,
+   "S4_share_any_false": 0.0,
+   "score": 0.0022727272727272635
+  },
+  "QD+SPK": {
+   "mean_S5_detection": 0.981060606060606,
+   "S4_share_any_false": 0.125,
+   "score": 0.856060606060606
+  }
+ }
+}
