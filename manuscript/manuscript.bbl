@@ -1,4 +1,4 @@
-\begin{thebibliography}{69}
+\begin{thebibliography}{71}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{{#1}}
 \providecommand{\urlprefix}{URL }
@@ -315,6 +315,12 @@ Teerapittayanon S, McDanel B, Kung HT (2016) {BranchyNet}: Fast inference via
   Conference on Pattern Recognition (ICPR), pp 2464--2469,
   \doi{10.1109/ICPR.2016.7900006}
 
+\bibitem[{Thiemann et~al.(2013)Thiemann, Ito, and Vincent}]{thiemann2013}
+Thiemann J, Ito N, Vincent E (2013) The diverse environments multi-channel
+  acoustic noise database ({DEMAND}): A database of multichannel environmental
+  noise recordings. Proceedings of Meetings on Acoustics 19:035081.
+  \doi{10.1121/1.4799597}
+
 \bibitem[{Tsai et~al.(2019)Tsai, Bai, Liang, Kolter, Morency, and
   Salakhutdinov}]{tsai2019}
 Tsai YHH, Bai S, Liang PP, et~al (2019) Multimodal transformer for unaligned
@@ -357,6 +363,12 @@ Wang RY, Strong DM (1996) Beyond accuracy: What data quality means to data
 Wang W, Tran D, Feiszli M (2020) What makes training multi-modal classification
   networks hard? In: Proceedings of the IEEE/CVF Conference on Computer Vision
   and Pattern Recognition, pp 12692--12702, \doi{10.1109/CVPR42600.2020.01271}
+
+\bibitem[{Wiegand et~al.(2003)Wiegand, Sullivan, Bjontegaard, and
+  Luthra}]{wiegand2003}
+Wiegand T, Sullivan GJ, Bjontegaard G, et~al (2003) Overview of the {H.264/AVC}
+  video coding standard. IEEE Transactions on Circuits and Systems for Video
+  Technology 13(7):560--576. \doi{10.1109/TCSVT.2003.815165}
 
 \bibitem[{Wilcoxon(1945)}]{wilcoxon1945}
 Wilcoxon F (1945) Individual comparisons by ranking methods. Biometrics

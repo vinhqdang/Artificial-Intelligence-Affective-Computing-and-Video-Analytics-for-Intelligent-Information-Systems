@@ -20,6 +20,9 @@ Manuscript and code for a submission to the *Information Systems Frontiers* spec
 | `code/run_revision.py`, `code/run_revision_mct.py` | Confidence under degradation, multi-condition training, nested stage-1 selection, fairness bootstrap |
 | `code/run_envelope.py` | Cycle 4: multi-condition training with envelope-aware gating |
 | `code/descriptive_stats.py` | Corpus statistics and zero-shot CLIP confusion matrix |
+| `code/extract_extension.py` | Quality descriptors, realistic degradations (DEMAND noise, H.264) and CREMA-D feature extraction |
+| `code/run_extension_exp.py` | Cycle 5: CREMA-D replication, cross-corpus test, content / quality-descriptor / speaker-adaptive monitors, gating |
+| `code/diag_spk.py` | Diagnostic of the speaker-adaptive monitor |
 | `code/SPEC_*.md` | Specifications of the extraction and evaluation protocol |
 | `results/` | All result tables (CSV/JSON) reported in the paper |
 
@@ -27,6 +30,9 @@ Manuscript and code for a submission to the *Information Systems Frontiers* spec
 
 1. Download the 24 `Video_Speech_Actor_XX.zip` archives of RAVDESS from https://doi.org/10.5281/zenodo.1188976 into `/home/user/data/raw/`,
    and the YuNet face detector (`face_detection_yunet_2023mar.onnx`) into `/home/user/data/`.
+   For Cycle 5, download the CREMA-D videos (https://github.com/CheyneyComputerScience/CREMA-D) listed in `code/cremad_subset_files.txt` (copy it to `/home/user/data/cremad/subset_files.txt`)
+   into `/home/user/data/cremad/flv/` with `VideoDemographics.csv` in `/home/user/data/cremad/meta/`, and the DEMAND
+   `PCAFETER` and `STRAFFIC` recordings (https://doi.org/10.5281/zenodo.1227121) into `/home/user/data/demand/`.
 2. Install Python 3 with `torch`, `torchvision`, `transformers`, `librosa`, `opencv-python-headless`, `scikit-learn`, `scipy`, `pandas`, `matplotlib`, `river`, and `ffmpeg`.
 3. Run, from the repository root:
 
@@ -42,6 +48,12 @@ python3 code/run_revision.py
 python3 code/run_revision_mct.py
 python3 code/run_envelope.py
 python3 code/descriptive_stats.py
+python3 code/extract_extension.py --part ravdess --workers 2
+python3 code/extract_extension.py --part ravdess --merge
+python3 code/extract_extension.py --part cremad --workers 2
+python3 code/extract_extension.py --part cremad --merge
+python3 code/run_extension_exp.py --corpus both --part all
+cd code && python3 diag_spk.py ravdess cremad && cd ..
 ```
 
 4. Build the manuscript:
@@ -50,5 +62,5 @@ python3 code/descriptive_stats.py
 cd manuscript && pdflatex manuscript && bibtex manuscript && pdflatex manuscript && pdflatex manuscript
 ```
 
-Feature extraction takes about two hours on four CPU cores; all evaluation scripts together run in about ten minutes.
+Feature extraction takes about two hours on four CPU cores, and the Cycle 5 extraction about four more hours; all evaluation scripts together run in about twenty minutes.
 All random processes are seeded (seed 2026).

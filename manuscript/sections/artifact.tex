@@ -1,6 +1,6 @@
 \section{The Artifact}\label{sec:artifact}
 
-Figure~\ref{fig:architecture} shows the general structure of the artifact as it stood after Cycle~3. The set of models in stage 1 is configurable. The figure shows the cheap pair A0+V0 used in Cycle~1. Following DP1, the integrated variants evaluated in Section~\ref{sec:results} use A0+A1. Cycle~4 keeps this structure and changes two things: the models are trained on clean and degraded data, and the monitors used for gating are fitted on the same data (Section~\ref{sec:envelope}). Each incoming utterance-length clip is split into an audio channel and a visual channel. In the fully monitored configuration, cheap features are computed for both channels on every clip because the monitors need them. Expensive features are computed only when the cascade escalates a clip and the channel is currently trusted. Per-model classifiers produce calibrated class probabilities, which are combined by late fusion over the set of active models. A monitoring layer watches the input statistics of each channel and switches channels in and out of fusion.
+Figure~\ref{fig:architecture} shows the general structure of the artifact. The set of models in stage 1 is configurable. The figure shows the cheap pair A0+V0 used in Cycle~1. Following DP1, the integrated variants evaluated in Section~\ref{sec:results} use A0+A1. Cycle~4 keeps this structure and changes two things: the models are trained on clean and degraded data, and the monitors used for gating are fitted on the same data (Section~\ref{sec:envelope}). Cycle~5 changes what the monitors observe: instead of the cheap content features, they score descriptors of signal quality (Section~\ref{sec:qd}). Each incoming utterance-length clip is split into an audio channel and a visual channel. In the fully monitored configuration, the monitor inputs (cheap features in Cycles~2--4, quality descriptors in Cycle~5) are computed for both channels on every clip. Expensive features are computed only when the cascade escalates a clip and the channel is currently trusted. Per-model classifiers produce calibrated class probabilities, which are combined by late fusion over the set of active models. A monitoring layer watches the input statistics of each channel and switches channels in and out of fusion.
 
 \begin{figure}[t]
 \centering
@@ -22,8 +22,8 @@ Figure~\ref{fig:architecture} shows the general structure of the artifact as it 
 \node[cheap] (v0) at (5.5,-0.6) {V0: MobileNetV3};
 \node[exp] (a1) at (5.5,4.6) {A1: wav2vec 2.0};
 \node[exp] (v1) at (5.5,-2.6) {V1: CLIP ViT-B/32};
-\node[mon] (amon) at (8.4,3.6) {Audio monitor\\Mahalanobis + ADWIN};
-\node[mon] (vmon) at (8.4,-1.6) {Visual monitor\\Mahalanobis + ADWIN};
+\node[mon] (amon) at (8.4,3.6) {Audio monitor: quality\\descriptors + ADWIN};
+\node[mon] (vmon) at (8.4,-1.6) {Visual monitor: quality\\descriptors + ADWIN};
 \node[box] (s1) at (8.4,1) {Stage 1: late\\fusion + temp.};
 \node[box] (gate) at (11.2,1) {Escalate if $c<\tau$\\or channel alarm};
 \node[box] (fuse) at (14.2,1) {Late fusion over\\healthy channels};
@@ -37,8 +37,8 @@ Figure~\ref{fig:architecture} shows the general structure of the artifact as it 
 \draw[darr] (vdec.south) |- (v1.west);
 \draw[arr] (a0.east) -| ([xshift=-3mm]s1.north);
 \draw[arr] (v0.east) -| ([xshift=-3mm]s1.south);
-\draw[marr] (a0.north) |- (amon.west);
-\draw[marr] (v0.south) |- (vmon.west);
+\draw[marr] ([yshift=2mm]adec.east) -- ++(0.45,0) |- (amon.west);
+\draw[marr] ([yshift=-2mm]vdec.east) -- ++(0.45,0) |- (vmon.west);
 \draw[arr] (s1) -- (gate);
 \draw[arr] (gate) -- node[above]{yes} (fuse);
 \draw[arr] (fuse) -- (out);
@@ -55,7 +55,7 @@ Figure~\ref{fig:architecture} shows the general structure of the artifact as it 
 \draw[arr] ([xshift=4mm]gate.north) |- (16.6,2.3) -- ([xshift=-6mm]out.north);
 \node[above, font=\scriptsize] at (12.0,2.3) {no: emit stage-1 label};
 \end{tikzpicture}}
-\caption{Architecture of the final artifact. Blue: cheap extractors, always computed. Orange: expensive extractors, computed only on escalation and only for channels in the healthy state (dashed arrows). Green: label-free monitoring layer.}\label{fig:architecture}
+\caption{Architecture of the final artifact. Blue: cheap extractors, always computed. Orange: expensive extractors, computed only on escalation and only for channels in the healthy state (dashed arrows). Green: label-free monitoring layer, which in the final design (Cycle~5) scores quality descriptors computed directly from the decoded signals.}\label{fig:architecture}
 \end{figure}
 
 \subsection{Modality models and calibrated late fusion}
@@ -115,3 +115,9 @@ Cycle~2 used \emph{clip-level gating}. If $q_h>1$ for a clip, the models of chan
 \subsection{Robust training and the training envelope (Cycle 4)}\label{sec:envelope}
 
 In Cycle~4 each modality model is trained on the clean training clips together with one degraded copy of the same clips: 10\,dB noise for the audio models and compression for the visual models. Temperatures and thresholds are fitted out-of-fold as before. The monitors are split into two roles. The \emph{clean-referenced} monitors described above define what normal input looks like. They raise alerts and attribute them to a channel, but they no longer change the fused set. The \emph{envelope} monitors use the same construction, but they are fitted on the multi-condition training features. Their distance therefore measures how far an input lies from everything the models were trained on. Only alarms from the envelope monitors change a channel's state in Algorithm~\ref{alg:slg}.
+
+\subsection{Quality-descriptor monitors (Cycle 5)}\label{sec:qd}
+
+The monitors of Cycles~2--4 observe the cheap content features A0 and V0. These features describe the speaker and the expression as well as the recording channel, which is why the monitors also reacted to speaker changes. Cycle~5 tests two ways of separating channel quality from content. The first follows the data-quality view of the kernel theory: it monitors descriptors of the \emph{signal} rather than of its content. For audio, 20 descriptors are computed on 25\,ms frames: percentiles of frame log-energy and their dynamic range (a proxy for the signal-to-noise ratio), spectral flatness, the noise-floor spectrum in eight mel bands over the quietest 10\% of frames, the share of energy above 4\,kHz, spectral entropy and the share of clipped samples. For video, nine descriptors are computed per sampled frame, on the full frame and on the face crop: mean and spread of luminance, shares of dark and saturated pixels, two sharpness measures (variance of the Laplacian, Tenengrad), a blockiness ratio across 8-pixel block boundaries, a noise estimate (residual of a median filter) and colour saturation. Their means and standard deviations over the clip give 36 features. The audio descriptors cost about 6\,ms of CPU time per clip. Our unoptimised visual descriptors, computed on every sampled full-resolution frame, cost about 0.34\,s per RAVDESS clip (1280$\times$720) and 0.06\,s per CREMA-D clip (480$\times$360), single-threaded. This is more than the V0 extractor, and it is not included in the end-to-end costs of Section~\ref{sec:results}, which were measured with the content monitors. The monitor construction (standardisation, PCA, Mahalanobis distance, inner out-of-fold P99 threshold, ADWIN) is unchanged; only its input changes.
+
+The second way keeps the content features but normalises them per speaker, as speaker-normalisation does in speech emotion recognition. Within each speaker session (for example a call or a consultation, whose boundaries the system knows), the first ten clips serve as enrolment: their mean and standard deviation standardise the remaining clips of the session, which are then scored against a reference built from training actors processed in the same way. The detector is reset at each session boundary. We call this the speaker-adaptive (SPK) monitor. Both variants, their combination and the content monitor were compared under a pre-specified rule: the mean detection rate on degraded streams minus the share of clean speaker-blocked streams with any false mark, chosen on RAVDESS and then applied unchanged to the second corpus.
