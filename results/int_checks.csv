@@ -1,0 +1,13 @@
+check,value,expected,passed
+A1 cascade taus equal run_cascade_orders A1 row (max abs diff),0.0,< 1e-12,True
+F-all LF per-clip correctness equals run_slg.simulate (mismatched clips),0.0,0,True
+SLG per-clip correctness equals run_slg.simulate (mismatched clips),0.0,0,True
+"SLG mean cost equals run_slg.simulate (max abs diff, s)",2.220446049250313e-16,< 1e-9,True
+IS audio ADWIN alarms equal batch adwin_alarms on every clip (streams ok / total),4320.0,4320,True
+IS visual ADWIN alarms equal batch adwin_alarms on observed clips (streams ok / total),4320.0,4320,True
+"No gating (S3, S4): IS predictions equal static LF(A0,A1) cascade (streams ok / checked)",480.0,480,True
+"No gating (S3, S4): IS cost = static cost + monitors evaluated (streams ok / checked)",480.0,480,True
+"No gating (S3, S4): max abs IS cost residual vs static + monitors (s)",4.440892098500626e-16,< 1e-12,True
+S3 IS-A streams with no DEGRADED mark: predictions equal static cascade (ok / streams),120.0,120,True
+S3 IS-B streams with no DEGRADED mark: predictions equal static cascade (ok / streams),120.0,120,True
+A1 cascade mean cost on S3 under run_cascade_orders convention (reference only),1.0450730423158205,,True

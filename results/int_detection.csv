@@ -1,0 +1,49 @@
+system,condition,channel,degraded_truth,n_streams,detection_rate,delay_median,delay_q25,delay_q75,visual_obs_delay_median,pre_change_marks_per_1000_clips,all_marks_per_1000_clips
+IS-A,snr20,audio,True,120,1.0,16.0,16.0,48.0,,0.0,2.0833333333333335
+IS-A,snr20,visual,False,120,,,,,,0.0,0.0
+IS-B,snr20,audio,True,120,1.0,16.0,16.0,48.0,,0.0,2.0833333333333335
+IS-B,snr20,visual,False,120,,,,,,0.0,0.0
+SLG (F-all),snr20,audio,True,120,1.0,16.0,16.0,48.0,,0.0,2.0833333333333335
+SLG (F-all),snr20,visual,False,120,,,,,,0.0,0.0
+IS-A,snr10,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-A,snr10,visual,False,120,,,,,,0.0,0.0
+IS-B,snr10,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-B,snr10,visual,False,120,,,,,,0.0,0.0
+SLG (F-all),snr10,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+SLG (F-all),snr10,visual,False,120,,,,,,0.0,0.0
+IS-A,snr0,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-A,snr0,visual,False,120,,,,,,0.0,0.0
+IS-B,snr0,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-B,snr0,visual,False,120,,,,,,0.0,0.0
+SLG (F-all),snr0,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+SLG (F-all),snr0,visual,False,120,,,,,,0.0,0.0
+IS-A,compress,audio,False,120,,,,,,0.0,0.0
+IS-A,compress,visual,True,120,1.0,43.5,34.0,59.0,20.5,0.0,2.0833333333333335
+IS-B,compress,audio,False,120,,,,,,0.0,0.0
+IS-B,compress,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+SLG (F-all),compress,audio,False,120,,,,,,0.0,0.0
+SLG (F-all),compress,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+IS-A,lowlight,audio,False,120,,,,,,0.0,0.0
+IS-A,lowlight,visual,True,120,1.0,60.5,43.0,72.0,32.0,0.0,2.0833333333333335
+IS-B,lowlight,audio,False,120,,,,,,0.0,0.0
+IS-B,lowlight,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+SLG (F-all),lowlight,audio,False,120,,,,,,0.0,0.0
+SLG (F-all),lowlight,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+IS-A,blur,audio,False,120,,,,,,0.0,0.0
+IS-A,blur,visual,True,120,0.9666666666666667,71.0,56.0,88.0,38.0,0.0,2.013888888888889
+IS-B,blur,audio,False,120,,,,,,0.0,0.0
+IS-B,blur,visual,True,120,1.0,48.0,16.0,48.0,48.0,0.0,2.0833333333333335
+SLG (F-all),blur,audio,False,120,,,,,,0.0,0.0
+SLG (F-all),blur,visual,True,120,1.0,48.0,16.0,48.0,48.0,0.0,2.0833333333333335
+IS-A,snr10+compress,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-A,snr10+compress,visual,True,120,1.0,36.0,32.0,44.0,20.5,0.0,2.0833333333333335
+IS-B,snr10+compress,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-B,snr10+compress,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+SLG (F-all),snr10+compress,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+SLG (F-all),snr10+compress,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+IS-A,snr0+lowlight,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-A,snr0+lowlight,visual,True,120,1.0,48.0,36.0,59.0,32.0,0.0,2.0833333333333335
+IS-B,snr0+lowlight,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+IS-B,snr0+lowlight,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335
+SLG (F-all),snr0+lowlight,audio,True,120,1.0,16.0,16.0,16.0,,0.0,2.0833333333333335
+SLG (F-all),snr0+lowlight,visual,True,120,1.0,16.0,16.0,16.0,16.0,0.0,2.0833333333333335

@@ -59,10 +59,9 @@ SYS = ["F-all LF", "A1 cascade", "Static LF(A0,A1) cascade", "SLG (F-all)", "IS-
 MAIN = ["F-all LF", "A1 cascade", "SLG (F-all)", "IS-A", "IS-B"]
 GATED_SYS = ["SLG (F-all)", "IS-A", "IS-B"]
 
-# modes of IS at each clip
+# modes of IS at each clip: stage 1; escalated F-all; visual path LF(V0,V1) (audio degraded);
+# stage 1 while visual is degraded (probe clips observe the visual monitor); F-all flagged unreliable
 M_S1, M_ESC, M_VIS, M_S1D, M_BOTH = 0, 1, 2, 3, 4
-MODE_NAME = {M_S1: "stage1", M_ESC: "escalated F-all", M_VIS: "visual path LF(V0,V1)",
-             M_S1D: "stage1, visual degraded (probe)", M_BOTH: "F-all unreliable (both degraded)"}
 
 
 # ----------------------------------------------------------------------------
@@ -454,7 +453,7 @@ def main():
 
     # ---- streams ------------------------------------------------------------------------
     streams = S.make_streams(st) + make_s4(st)
-    rows, extras, cor_checks = [], [], []
+    rows, extras = [], []
     pa_sum = {}
     pa_cnt = {}
     n_sim_lf_mismatch = n_sim_slg_mismatch = 0
@@ -565,8 +564,11 @@ def main():
              value=alarm_visual_ok, expected=2 * len(streams), passed=alarm_visual_ok == 2 * len(streams)),
         dict(check="No gating (S3, S4): IS predictions equal static LF(A0,A1) cascade (streams ok / checked)",
              value=gate_off_pred_ok, expected=gate_off_checked, passed=gate_off_pred_ok == gate_off_checked),
-        dict(check="No gating (S3, S4): IS cost = static cost + audio monitor + visual monitor when observed (streams ok / checked)",
+        dict(check="No gating (S3, S4): IS cost = static cost + monitors evaluated (streams ok / checked)",
              value=gate_off_cost_ok, expected=gate_off_checked, passed=gate_off_cost_ok == gate_off_checked),
+        dict(check="No gating (S3, S4): max abs IS cost residual vs static + monitors (s)",
+             value=gate_off_static_max_cost_resid, expected="< 1e-12",
+             passed=bool(gate_off_static_max_cost_resid < 1e-12)),
         dict(check="S3 IS-A streams with no DEGRADED mark: predictions equal static cascade (ok / streams)",
              value=zero_mark_pred_ok["IS-A"], expected=zero_mark_streams["IS-A"],
              passed=zero_mark_pred_ok["IS-A"] == zero_mark_streams["IS-A"]),
@@ -592,7 +594,7 @@ def main():
                 ev_rows.append(dict(system=name, scenario=s["scn"], condition=s["cond"], fold=s["fold"] + 1,
                                     seed=s["seed"], clip_index=t, effective_from=t + 1, channel=ch,
                                     new_state=new, mean_last15=m15,
-                                    channel_degraded_truth=(ch in Q.DEGRADED_CH[s["cond"]])))
+                                    channel_degraded_truth=(ch in Q.DEGRADED_CH.get(s["cond"], set()))))
     ev_df = pd.DataFrame(ev_rows)
 
     scen.to_csv(RES / "int_scenarios.csv", index=False)
