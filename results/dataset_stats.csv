@@ -1,0 +1,14 @@
+statistic,value
+n_clips,1440.0
+duration_mean_s,3.689380138888889
+duration_sd_s,0.33716903084362615
+frames_per_clip_mean,18.852083333333333
+frames_per_clip_sd,1.692786837107978
+face_rate_clean_min,1.0
+face_rate_clean_mean,1.0
+face_rate_compress_min,1.0
+face_rate_compress_mean,1.0
+face_rate_lowlight_min,1.0
+face_rate_lowlight_mean,1.0
+face_rate_blur_min,1.0
+face_rate_blur_mean,1.0

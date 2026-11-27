@@ -1,6 +1,6 @@
 \section{The Artifact}\label{sec:artifact}
 
-Figure~\ref{fig:architecture} shows the artifact as it stood after Cycle~3. Cycle~4 keeps this structure and changes two things: the models are trained on clean and degraded data, and the monitors used for gating are fitted on the same data (Section~\ref{sec:envelope}). Each incoming utterance-length clip is split into an audio channel and a visual channel. Cheap features are always computed for both channels, because the monitors need them. Expensive features are computed only when the cascade escalates a clip and the channel is currently trusted. Per-model classifiers produce calibrated class probabilities, which are combined by late fusion over the set of active models. A monitoring layer watches the input statistics of each channel and switches channels in and out of fusion.
+Figure~\ref{fig:architecture} shows the general structure of the artifact as it stood after Cycle~3. The set of models in stage 1 is configurable. The figure shows the cheap pair A0+V0 used in Cycle~1. Following DP1, the integrated variants evaluated in Section~\ref{sec:results} use A0+A1. Cycle~4 keeps this structure and changes two things: the models are trained on clean and degraded data, and the monitors used for gating are fitted on the same data (Section~\ref{sec:envelope}). Each incoming utterance-length clip is split into an audio channel and a visual channel. In the fully monitored configuration, cheap features are computed for both channels on every clip because the monitors need them. Expensive features are computed only when the cascade escalates a clip and the channel is currently trusted. Per-model classifiers produce calibrated class probabilities, which are combined by late fusion over the set of active models. A monitoring layer watches the input statistics of each channel and switches channels in and out of fusion.
 
 \begin{figure}[t]
 \centering
@@ -95,11 +95,11 @@ Cycle~2 used \emph{clip-level gating}. If $q_h>1$ for a clip, the models of chan
 \begin{algorithm}[t]
 \caption{Stream-level gating (Cycle 3)}\label{alg:slg}
 \begin{algorithmic}[1]
-\Require clip stream $x_1,x_2,\dots$; monitors $(d_h,\theta_h,\mu_h,\sigma_h)$ and ADWIN detectors $D_h$ for $h\in\{\mathrm{a},\mathrm{v}\}$; threshold $\tau$; margin margin $\kappa=1$
+\Require clip stream $x_1,x_2,\dots$; monitors $(d_h,\theta_h,\mu_h,\sigma_h)$ and ADWIN detectors $D_h$ for $h\in\{\mathrm{a},\mathrm{v}\}$; threshold $\tau$; margin $\kappa=1$
 \State $\mathit{state}_h\gets\textsc{healthy}$ for both channels
 \For{$t=1,2,\dots$}
   \State compute cheap features A0, V0 of $x_t$; $s_h\gets(\log(d_h(x_t)/\theta_h)-\mu_h)/\sigma_h$
-  \State $S\gets$ models of healthy channels; \textbf{if} $S=\emptyset$ \textbf{then} $S\gets\mathcal{M}$
+  \State $S\gets$ models of healthy channels; \textbf{if} $S=\emptyset$ \textbf{then} $S\gets\mathcal{M}$ and flag the output as unreliable
   \State emit $\arg\max_k p_S(k\mid x_t)$ (Eq.~\ref{eq:lf})
   \For{$h\in\{\mathrm{a},\mathrm{v}\}$}
     \State $D_h.\textsc{update}(s_h)$

@@ -1,4 +1,4 @@
-\begin{thebibliography}{68}
+\begin{thebibliography}{69}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{{#1}}
 \providecommand{\urlprefix}{URL }
@@ -116,6 +116,10 @@ Gong L, Yang H, Fang G, et~al (2025) A survey on video analytics in
 Gregor S, Hevner AR (2013) Positioning and presenting design science research
   for maximum impact. MIS Quarterly 37(2):337--355.
   \doi{10.25300/MISQ/2013/37.2.01}
+
+\bibitem[{Gregor and Jones(2007)}]{gregor2007}
+Gregor S, Jones D (2007) The anatomy of a design theory. Journal of the
+  Association for Information Systems 8(5):312--335. \doi{10.17705/1jais.00129}
 
 \bibitem[{Guo et~al.(2017)Guo, Pleiss, Sun, and Weinberger}]{guo2017}
 Guo C, Pleiss G, Sun Y, et~al (2017) On calibration of modern neural networks.
