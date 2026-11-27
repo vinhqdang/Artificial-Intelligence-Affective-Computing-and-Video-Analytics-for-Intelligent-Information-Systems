@@ -23,6 +23,7 @@ Manuscript and code for a submission to the *Information Systems Frontiers* spec
 | `code/extract_extension.py` | Quality descriptors, realistic degradations (DEMAND noise, H.264) and CREMA-D feature extraction |
 | `code/run_extension_exp.py` | Cycle 5: CREMA-D replication, cross-corpus test, content / quality-descriptor / speaker-adaptive monitors, gating |
 | `code/diag_spk.py` | Diagnostic of the speaker-adaptive monitor |
+| `code/time_qd.py` | CPU time of the quality descriptors |
 | `code/SPEC_*.md` | Specifications of the extraction and evaluation protocol |
 | `results/` | All result tables (CSV/JSON) reported in the paper |
 
@@ -53,7 +54,7 @@ python3 code/extract_extension.py --part ravdess --merge
 python3 code/extract_extension.py --part cremad --workers 2
 python3 code/extract_extension.py --part cremad --merge
 python3 code/run_extension_exp.py --corpus both --part all
-cd code && python3 diag_spk.py ravdess cremad && cd ..
+cd code && python3 diag_spk.py ravdess cremad && python3 time_qd.py && cd ..
 ```
 
 4. Build the manuscript:

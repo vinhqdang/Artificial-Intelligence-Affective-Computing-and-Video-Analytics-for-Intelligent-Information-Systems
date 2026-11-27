@@ -1,0 +1,4 @@
+descriptor,input,seconds_per_clip
+audio,3.7 s at 16 kHz,0.0033
+video RAVDESS,19 frames 1280x720 + crops,0.3406
+video CREMA-D,13 frames 480x360 + crops,0.0536
