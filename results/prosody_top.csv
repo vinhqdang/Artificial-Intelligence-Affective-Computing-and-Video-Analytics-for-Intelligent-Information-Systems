@@ -1,0 +1,11 @@
+rank,feature,mean_abs_std_coef,class_largest_positive_coef,class_most_negative_coef
+1,mfcc0_std,0.26868555,surprised,sad
+2,mfcc0_mean,0.26282886,angry,calm
+3,ddmfcc4_std,0.22693093,happy,disgust
+4,mfcc3_mean,0.20539004,sad,disgust
+5,mfcc1_mean,0.19632284,calm,angry
+6,rms_std,0.19455434,angry,sad
+7,mfcc7_mean,0.19451506,calm,sad
+8,mfcc1_std,0.18838118,neutral,fearful
+9,dmfcc5_std,0.18498914,disgust,fearful
+10,rms_mean,0.18081492,angry,sad
