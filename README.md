@@ -16,6 +16,10 @@ Manuscript and code for a submission to the *Information Systems Frontiers* spec
 | `code/run_cascade_orders.py` | Comparison of cascade first stages (cost vs accuracy) |
 | `code/run_qag.py` | Cycle 2: per-modality input monitors, recalibration, clip-level gating, monitor-based drift detection |
 | `code/run_slg.py` | Cycle 3: stream-level gating, recovery and control scenarios |
+| `code/run_integrated.py` | End-to-end evaluation of the integrated audio-first artifact (cost, gating, speaker-blocked control) |
+| `code/run_revision.py`, `code/run_revision_mct.py` | Confidence under degradation, multi-condition training, nested stage-1 selection, fairness bootstrap |
+| `code/run_envelope.py` | Cycle 4: multi-condition training with envelope-aware gating |
+| `code/descriptive_stats.py` | Corpus statistics and zero-shot CLIP confusion matrix |
 | `code/SPEC_*.md` | Specifications of the extraction and evaluation protocol |
 | `results/` | All result tables (CSV/JSON) reported in the paper |
 
@@ -33,6 +37,11 @@ python3 code/run_experiments.py
 python3 code/run_cascade_orders.py
 python3 code/run_qag.py
 python3 code/run_slg.py
+python3 code/run_integrated.py
+python3 code/run_revision.py
+python3 code/run_revision_mct.py
+python3 code/run_envelope.py
+python3 code/descriptive_stats.py
 ```
 
 4. Build the manuscript:
@@ -41,5 +50,5 @@ python3 code/run_slg.py
 cd manuscript && pdflatex manuscript && bibtex manuscript && pdflatex manuscript && pdflatex manuscript
 ```
 
-Feature extraction takes about two hours on four CPU cores; all evaluation scripts together run in under two minutes.
+Feature extraction takes about two hours on four CPU cores; all evaluation scripts together run in about ten minutes.
 All random processes are seeded (seed 2026).
