@@ -1,0 +1,9 @@
+direction,monitor,channel,n_folds,target_clean_flag_rate_mean,target_clean_flag_rate_sd,source_heldout_flag_rate_mean,switch_fire_share,pre_switch_alarm_share,median_delay_clips
+ravdess->cremad,CONTENT,audio,6,0.6564126109580655,0.09311297784490767,0.008333333333333333,1.0,0.0,15.0
+ravdess->cremad,CONTENT,visual,6,0.7033210896847262,0.157828085260193,0.010416666666666666,1.0,0.0,15.0
+ravdess->cremad,QD,audio,6,0.04185797367615549,0.0887384116017736,0.020138888888888887,1.0,0.0,15.0
+ravdess->cremad,QD,visual,6,1.0,0.0,0.009722222222222222,1.0,0.0,15.0
+cremad->ravdess,CONTENT,audio,7,0.01140873015873016,0.0019168487759509839,0.010601355926986179,1.0,0.0,47.0
+cremad->ravdess,CONTENT,visual,7,0.8049603174603174,0.1113635937580017,0.0154385472137573,1.0,0.0,15.0
+cremad->ravdess,QD,audio,7,1.0,0.0,0.01056672669067627,1.0,0.0,15.0
+cremad->ravdess,QD,visual,7,1.0,0.0,0.01098901098901099,1.0,0.0,15.0
