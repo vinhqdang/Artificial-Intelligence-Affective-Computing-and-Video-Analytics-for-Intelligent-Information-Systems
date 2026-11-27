@@ -1,4 +1,4 @@
-\begin{thebibliography}{61}
+\begin{thebibliography}{68}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{{#1}}
 \providecommand{\urlprefix}{URL }
@@ -73,6 +73,11 @@ Cui L, Zhao J, Ng KC, et~al (2025) Feeling over thinking: A video analytics
   framework for measuring empathy from video recordings. SSRN Working Paper,
   \doi{10.2139/ssrn.5260163}
 
+\bibitem[{DeLone and McLean(2003)}]{delone2003}
+DeLone WH, McLean ER (2003) The {DeLone} and {McLean} model of information
+  systems success: A ten-year update. Journal of Management Information Systems
+  19(4):9--30. \doi{10.1080/07421222.2003.11045748}
+
 \bibitem[{Dem{\v{s}}ar(2006)}]{demsar2006}
 Dem{\v{s}}ar J (2006) Statistical comparisons of classifiers over multiple data
   sets. Journal of Machine Learning Research 7:1--30
@@ -106,6 +111,11 @@ Gama J, {\v{Z}}liobait{\.e} I, Bifet A, et~al (2014) A survey on concept drift
   et~al.}]{gong2025}
 Gong L, Yang H, Fang G, et~al (2025) A survey on video analytics in
   cloud-edge-terminal collaborative systems. arXiv preprint arXiv:2502.06581
+
+\bibitem[{Gregor and Hevner(2013)}]{gregor2013}
+Gregor S, Hevner AR (2013) Positioning and presenting design science research
+  for maximum impact. MIS Quarterly 37(2):337--355.
+  \doi{10.25300/MISQ/2013/37.2.01}
 
 \bibitem[{Guo et~al.(2017)Guo, Pleiss, Sun, and Weinberger}]{guo2017}
 Guo C, Pleiss G, Sun Y, et~al (2017) On calibration of modern neural networks.
@@ -154,6 +164,11 @@ Kang D, Emmons J, Abuzaid F, et~al (2017) {NoScope}: Optimizing neural network
 Kittler J, Hatef M, Duin RPW, et~al (1998) On combining classifiers. IEEE
   Transactions on Pattern Analysis and Machine Intelligence 20(3):226--239.
   \doi{10.1109/34.667881}
+
+\bibitem[{Lee et~al.(2018)Lee, Lee, Lee, and Shin}]{lee2018}
+Lee K, Lee K, Lee H, et~al (2018) A simple unified framework for detecting
+  out-of-distribution samples and adversarial attacks. In: Advances in Neural
+  Information Processing Systems
 
 \bibitem[{Li and Deng(2022)}]{li2022fer}
 Li S, Deng W (2022) Deep facial expression recognition: A survey. IEEE
@@ -205,6 +220,12 @@ Mollahosseini A, Hasani B, Mahoor MH (2019) {AffectNet}: A database for facial
   expression, valence, and arousal computing in the wild. IEEE Transactions on
   Affective Computing 10(1):18--31. \doi{10.1109/TAFFC.2017.2740923}
 
+\bibitem[{Ovadia et~al.(2019)Ovadia, Fertig, Ren, Nado, Sculley, Nowozin,
+  Dillon, Lakshminarayanan, and Snoek}]{ovadia2019}
+Ovadia Y, Fertig E, Ren J, et~al (2019) Can you trust your model's uncertainty?
+  evaluating predictive uncertainty under dataset shift. In: Advances in Neural
+  Information Processing Systems
+
 \bibitem[{Page(1954)}]{page1954}
 Page ES (1954) Continuous inspection schemes. Biometrika 41(1/2):100--115.
   \doi{10.1093/biomet/41.1-2.100}
@@ -240,6 +261,11 @@ Picard RW (1997) Affective Computing. MIT Press, Cambridge, MA,
 Poria S, Cambria E, Bajpai R, et~al (2017) A review of affective computing:
   From unimodal analysis to multimodal fusion. Information Fusion 37:98--125.
   \doi{10.1016/j.inffus.2017.02.003}
+
+\bibitem[{Prat et~al.(2015)Prat, Comyn-Wattiau, and Akoka}]{prat2015}
+Prat N, Comyn-Wattiau I, Akoka J (2015) A taxonomy of evaluation methods for
+  information systems artifacts. Journal of Management Information Systems
+  32(3):229--267. \doi{10.1080/07421222.2015.1099390}
 
 \bibitem[{Rabanser et~al.(2019)Rabanser, G{\"u}nnemann, and
   Lipton}]{rabanser2019}
@@ -299,6 +325,12 @@ Tzirakis P, Trigeorgis G, Nicolaou MA, et~al (2017) End-to-end multimodal
   Topics in Signal Processing 11(8):1301--1309.
   \doi{10.1109/JSTSP.2017.2764438}
 
+\bibitem[{Venable et~al.(2016)Venable, Pries-Heje, and
+  Baskerville}]{venable2016}
+Venable J, Pries-Heje J, Baskerville R (2016) {FEDS}: a framework for
+  evaluation in design science research. European Journal of Information
+  Systems 25(1):77--89. \doi{10.1057/ejis.2014.36}
+
 \bibitem[{Viola and Jones(2001)}]{viola2001}
 Viola P, Jones M (2001) Rapid object detection using a boosted cascade of
   simple features. In: Proceedings of the 2001 IEEE Computer Society Conference
@@ -311,6 +343,11 @@ Wagner J, Triantafyllopoulos A, Wierstorf H, et~al (2023) Dawn of the
   transformer era in speech emotion recognition: Closing the valence gap. IEEE
   Transactions on Pattern Analysis and Machine Intelligence 45(9):10745--10759.
   \doi{10.1109/TPAMI.2023.3263585}
+
+\bibitem[{Wang and Strong(1996)}]{wang1996}
+Wang RY, Strong DM (1996) Beyond accuracy: What data quality means to data
+  consumers. Journal of Management Information Systems 12(4):5--33.
+  \doi{10.1080/07421222.1996.11518099}
 
 \bibitem[{Wang et~al.(2020)Wang, Tran, and Feiszli}]{wang2020}
 Wang W, Tran D, Feiszli M (2020) What makes training multi-modal classification
