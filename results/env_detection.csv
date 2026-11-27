@@ -1,0 +1,17 @@
+monitor,condition,n_streams,detection_rate,delay_median,delay_q25,delay_q75,first_mark_audio,first_mark_visual,first_mark_on_degraded_channel,pre_change_mark_rate,wrong_channel_degraded_marks_per_1000_clips
+clean-fit (alerting view),snr20,120,1.0,16.0,16.0,48.0,120,0,1.0,0.0,0.0
+clean-fit (alerting view),snr10,120,1.0,16.0,16.0,16.0,120,0,1.0,0.0,0.0
+clean-fit (alerting view),snr0,120,1.0,16.0,16.0,16.0,120,0,1.0,0.0,0.0
+clean-fit (alerting view),compress,120,1.0,16.0,16.0,16.0,0,120,1.0,0.0,0.0
+clean-fit (alerting view),lowlight,120,1.0,16.0,16.0,16.0,0,120,1.0,0.0,0.0
+clean-fit (alerting view),blur,120,1.0,48.0,16.0,48.0,0,120,1.0,0.0,0.0
+clean-fit (alerting view),snr10+compress,120,1.0,16.0,16.0,16.0,120,0,1.0,0.0,0.0
+clean-fit (alerting view),snr0+lowlight,120,1.0,16.0,16.0,16.0,120,0,1.0,0.0,0.0
+envelope (gating view),snr20,120,0.0,,,,0,0,,0.0,0.0
+envelope (gating view),snr10,120,0.0,,,,0,0,,0.0,0.0
+envelope (gating view),snr0,120,0.0,,,,0,0,,0.0,0.0
+envelope (gating view),compress,120,0.0,,,,0,0,,0.0,0.0
+envelope (gating view),lowlight,120,1.0,16.0,16.0,16.0,0,120,1.0,0.0,0.0
+envelope (gating view),blur,120,0.16666666666666666,96.0,80.0,112.0,0,20,1.0,0.0,0.0
+envelope (gating view),snr10+compress,120,0.0,,,,0,0,,0.0,0.0
+envelope (gating view),snr0+lowlight,120,1.0,16.0,16.0,16.0,0,120,1.0,0.0,0.0

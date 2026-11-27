@@ -2,7 +2,7 @@
   "seed": 2026,
   "n_streams": 2160,
   "n_clips": 1036800,
-  "runtime_seconds": 27.312612478999654,
+  "runtime_seconds": 29.684181309999985,
   "config": {
     "stage1": "LF(A0,A1), per-fold temperature (training OOF), tau via operating_point",
     "visual_probe_every": 8,

@@ -1,0 +1,1888 @@
+{
+  "seed": 2026,
+  "n_streams": 2040,
+  "runtime_seconds": 70.13302266499886,
+  "notes": {
+    "envelope": "Per fold, envelope monitors fitted on stacked clean + degraded training clips (audio: prosody clean + snr10; visual: mnet clean + compress), P99 from inner GroupKFold(4) by actor, log q standardised with inner OOF mean and sd.",
+    "gating": "run_slg state machine (ADWIN delta 0.002, recent-15 mean threshold 1.0). Predictions are MCT late fusion over active models. Clean-fit and envelope rows differ only in monitors.",
+    "alerting": "Clean-fit monitors are reported as the alerting view (detection tables).",
+    "control_false_alarms": "Degraded marks per 1000 clips in S3 clean control streams.",
+    "clean_fit_marks": "Clean-fit SLG marks are identical in the clean-trained and MCT regimes (asserted)."
+  },
+  "envelope_folds": [
+    {
+      "fold": 1,
+      "channel": "audio",
+      "theta_p99": 439.3527374753185,
+      "oof_mu": -1.2815780113689088,
+      "oof_sd": 0.39652289728118095,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 1,
+      "channel": "visual",
+      "theta_p99": 1504.283440528932,
+      "oof_mu": -1.1908559310674618,
+      "oof_sd": 0.40849651318268726,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 2,
+      "channel": "audio",
+      "theta_p99": 487.0920537868537,
+      "oof_mu": -1.381791513741371,
+      "oof_sd": 0.4051328015464967,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 2,
+      "channel": "visual",
+      "theta_p99": 1504.8120434244831,
+      "oof_mu": -1.2171081326344464,
+      "oof_sd": 0.41799706962179556,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 3,
+      "channel": "audio",
+      "theta_p99": 528.8617857901324,
+      "oof_mu": -1.4612144581334103,
+      "oof_sd": 0.4174449658652273,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 3,
+      "channel": "visual",
+      "theta_p99": 1748.9872145420272,
+      "oof_mu": -1.3678656078279252,
+      "oof_sd": 0.42071038541970823,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 4,
+      "channel": "audio",
+      "theta_p99": 495.7007043714065,
+      "oof_mu": -1.4071881059820008,
+      "oof_sd": 0.41234474833757384,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 4,
+      "channel": "visual",
+      "theta_p99": 1710.0309187703167,
+      "oof_mu": -1.3143438266696224,
+      "oof_sd": 0.4374871516408181,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 5,
+      "channel": "audio",
+      "theta_p99": 475.9222452769949,
+      "oof_mu": -1.3551298846378832,
+      "oof_sd": 0.4037205079372169,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 5,
+      "channel": "visual",
+      "theta_p99": 1944.5260880157691,
+      "oof_mu": -1.4378157630865396,
+      "oof_sd": 0.44465068758893456,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 6,
+      "channel": "audio",
+      "theta_p99": 502.6679768694128,
+      "oof_mu": -1.4108248388068603,
+      "oof_sd": 0.407323751261877,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    },
+    {
+      "fold": 6,
+      "channel": "visual",
+      "theta_p99": 1626.4554655544441,
+      "oof_mu": -1.2836068222283277,
+      "oof_sd": 0.3990067460364492,
+      "n_train_stacked": 2400,
+      "oof_flag_rate_p99": 0.01
+    }
+  ],
+  "flag_rates": [
+    {
+      "channel": "audio",
+      "monitor": "envelope",
+      "mc": "clean",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.01875,
+      "mean_log_q": -1.3886333601935217,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "clean-fit",
+      "mc": "clean",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.008333333333333333,
+      "mean_log_q": -1.5874810031431759,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "envelope",
+      "mc": "snr20",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.0,
+      "mean_log_q": -1.249061282847089,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "clean-fit",
+      "mc": "snr20",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.005555555555555556,
+      "mean_log_q": -0.41010192524982503,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "envelope",
+      "mc": "snr10",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.0,
+      "mean_log_q": -1.4384980801741727,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "clean-fit",
+      "mc": "snr10",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.10208333333333333,
+      "mean_log_q": -0.1791523271521521,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "envelope",
+      "mc": "snr0",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.0,
+      "mean_log_q": -1.468309034269495,
+      "n_clips": 1440
+    },
+    {
+      "channel": "audio",
+      "monitor": "clean-fit",
+      "mc": "snr0",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.6736111111111112,
+      "mean_log_q": 0.06390781079933294,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "envelope",
+      "mc": "clean",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.022222222222222223,
+      "mean_log_q": -1.2253177739476462,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "clean-fit",
+      "mc": "clean",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.010416666666666666,
+      "mean_log_q": -1.3298597055792976,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "envelope",
+      "mc": "compress",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.0006944444444444445,
+      "mean_log_q": -1.3343469485863686,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "clean-fit",
+      "mc": "compress",
+      "in_training_envelope": true,
+      "flag_rate_p99": 0.5875,
+      "mean_log_q": 0.0647530870750048,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "envelope",
+      "mc": "lowlight",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.17777777777777778,
+      "mean_log_q": -0.2942397404204985,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "clean-fit",
+      "mc": "lowlight",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.20555555555555555,
+      "mean_log_q": -0.3019676662299615,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "envelope",
+      "mc": "blur",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.0006944444444444445,
+      "mean_log_q": -1.0796808868001149,
+      "n_clips": 1440
+    },
+    {
+      "channel": "visual",
+      "monitor": "clean-fit",
+      "mc": "blur",
+      "in_training_envelope": false,
+      "flag_rate_p99": 0.04375,
+      "mean_log_q": -0.5375049339720905,
+      "n_clips": 1440
+    }
+  ],
+  "scenarios": [
+    {
+      "system": "clean-trained LF",
+      "condition": "snr20",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.6222222222222222,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "snr10",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.3701388888888888,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "snr0",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.17777777777777778,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.7020833333333333,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.6840277777777778,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "blur",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.734027777777778,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.3597222222222223,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained LF",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.16597222222222224,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "snr20",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.6205555555555555,
+      "mean_cost_s": 1.8328857746075933
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "snr10",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.6034722222222222,
+      "mean_cost_s": 1.8250300949013039
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "snr0",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.5925694444444444,
+      "mean_cost_s": 1.824811881576129
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.7087500000000001,
+      "mean_cost_s": 1.5990850910422623
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.7063888888888888,
+      "mean_cost_s": 1.6112584834137096
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "blur",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.7147569444444445,
+      "mean_cost_s": 1.6346313967668877
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.3597222222222223,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "clean-trained SLG (clean-fit)",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.8256944444444445,
+      "acc_degraded": 0.17354166666666668,
+      "mean_cost_s": 2.0017828882928232
+    },
+    {
+      "system": "MCT LF",
+      "condition": "snr20",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.797222222222222,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "snr10",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.8062499999999998,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "snr0",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.5965277777777777,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.8034722222222221,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.6784722222222221,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "blur",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.7694444444444444,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.788888888888889,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT LF",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.4201388888888888,
+      "mean_cost_s": 2.0075345913159457
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "snr20",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.6276736111111112,
+      "mean_cost_s": 1.8328857746075933
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "snr10",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.6191319444444445,
+      "mean_cost_s": 1.8250300949013039
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "snr0",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.6048958333333334,
+      "mean_cost_s": 1.824811881576129
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.7117708333333332,
+      "mean_cost_s": 1.5990850910422623
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.7028472222222223,
+      "mean_cost_s": 1.6112584834137096
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "blur",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.716736111111111,
+      "mean_cost_s": 1.6346313967668877
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.788888888888889,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "MCT+SLG (clean-fit)",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.4186458333333333,
+      "mean_cost_s": 2.0017828882928232
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "snr20",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.797222222222222,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "snr10",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.8062499999999998,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "snr0",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.5965277777777777,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.8034722222222221,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.7028472222222223,
+      "mean_cost_s": 1.6107715477188516
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "blur",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.7657638888888888,
+      "mean_cost_s": 1.9642868621856802
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.788888888888889,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "system": "MCT+SLG (envelope)",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "acc_clean_first": 0.83125,
+      "acc_degraded": 0.3928819444444444,
+      "mean_cost_s": 1.612719290498283
+    }
+  ],
+  "detection": [
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "snr20",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 48.0,
+      "first_mark_audio": 120,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "snr10",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 120,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "snr0",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 120,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "compress",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 0,
+      "first_mark_visual": 120,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 0,
+      "first_mark_visual": 120,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "blur",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 48.0,
+      "delay_q25": 16.0,
+      "delay_q75": 48.0,
+      "first_mark_audio": 0,
+      "first_mark_visual": 120,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 120,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "clean-fit (alerting view)",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 120,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "snr20",
+      "n_streams": 120,
+      "detection_rate": 0.0,
+      "delay_median": NaN,
+      "delay_q25": NaN,
+      "delay_q75": NaN,
+      "first_mark_audio": 0,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": NaN,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "snr10",
+      "n_streams": 120,
+      "detection_rate": 0.0,
+      "delay_median": NaN,
+      "delay_q25": NaN,
+      "delay_q75": NaN,
+      "first_mark_audio": 0,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": NaN,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "snr0",
+      "n_streams": 120,
+      "detection_rate": 0.0,
+      "delay_median": NaN,
+      "delay_q25": NaN,
+      "delay_q75": NaN,
+      "first_mark_audio": 0,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": NaN,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "compress",
+      "n_streams": 120,
+      "detection_rate": 0.0,
+      "delay_median": NaN,
+      "delay_q25": NaN,
+      "delay_q75": NaN,
+      "first_mark_audio": 0,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": NaN,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 0,
+      "first_mark_visual": 120,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "blur",
+      "n_streams": 120,
+      "detection_rate": 0.16666666666666666,
+      "delay_median": 96.0,
+      "delay_q25": 80.0,
+      "delay_q75": 112.0,
+      "first_mark_audio": 0,
+      "first_mark_visual": 20,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "detection_rate": 0.0,
+      "delay_median": NaN,
+      "delay_q25": NaN,
+      "delay_q75": NaN,
+      "first_mark_audio": 0,
+      "first_mark_visual": 0,
+      "first_mark_on_degraded_channel": NaN,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    },
+    {
+      "monitor": "envelope (gating view)",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "detection_rate": 1.0,
+      "delay_median": 16.0,
+      "delay_q25": 16.0,
+      "delay_q75": 16.0,
+      "first_mark_audio": 0,
+      "first_mark_visual": 120,
+      "first_mark_on_degraded_channel": 1.0,
+      "pre_change_mark_rate": 0.0,
+      "wrong_channel_degraded_marks_per_1000_clips": 0.0
+    }
+  ],
+  "control": [
+    {
+      "monitor": "clean-fit",
+      "system": "LF (F-all)",
+      "accuracy_clean": 0.83125,
+      "mean_cost_s": 2.007534591315946
+    },
+    {
+      "monitor": "clean-fit",
+      "system": "Clip QAG (P99)",
+      "accuracy_clean": 0.826388888888889,
+      "mean_cost_s": 1.9965892668417249
+    },
+    {
+      "monitor": "clean-fit",
+      "system": "SLG",
+      "accuracy_clean": 0.83125,
+      "mean_cost_s": 2.00811107472289
+    },
+    {
+      "monitor": "envelope",
+      "system": "LF (F-all)",
+      "accuracy_clean": 0.83125,
+      "mean_cost_s": 2.007534591315946
+    },
+    {
+      "monitor": "envelope",
+      "system": "Clip QAG (P99)",
+      "accuracy_clean": 0.826388888888889,
+      "mean_cost_s": 1.9965892668417249
+    },
+    {
+      "monitor": "envelope",
+      "system": "SLG",
+      "accuracy_clean": 0.83125,
+      "mean_cost_s": 2.00811107472289
+    }
+  ],
+  "control_summary": {
+    "clean-fit": {
+      "n_streams": 120,
+      "n_clips": 57600,
+      "pct_clips_any_channel_marked_degraded": 0.0,
+      "pct_clips_any_model_dropped_SLG": 0.0,
+      "pct_clips_any_model_dropped_QAG": 1.7361111111111112,
+      "degraded_marks_per_1000_clips": 0.0,
+      "degraded_marks_audio_per_1000_clips": 0.0,
+      "degraded_marks_visual_per_1000_clips": 0.0,
+      "pct_streams_with_any_mark": 0.0,
+      "streams_without_any_mark": 120,
+      "zero_mark_streams_SLG_pred_identical_to_LF": 120,
+      "zero_mark_streams_SLG_acc_equal_LF": 120
+    },
+    "envelope": {
+      "n_streams": 120,
+      "n_clips": 57600,
+      "pct_clips_any_channel_marked_degraded": 0.0,
+      "pct_clips_any_model_dropped_SLG": 0.0,
+      "pct_clips_any_model_dropped_QAG": 1.7361111111111112,
+      "degraded_marks_per_1000_clips": 0.0,
+      "degraded_marks_audio_per_1000_clips": 0.0,
+      "degraded_marks_visual_per_1000_clips": 0.0,
+      "pct_streams_with_any_mark": 0.0,
+      "streams_without_any_mark": 120,
+      "zero_mark_streams_SLG_pred_identical_to_LF": 120,
+      "zero_mark_streams_SLG_acc_equal_LF": 120
+    }
+  },
+  "recovery": [
+    {
+      "monitor": "clean-fit",
+      "condition": "snr20",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 119,
+      "recovered_fraction_channels": 0.9916666666666667,
+      "recovered_fraction_streams": 0.9916666666666667,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "snr10",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 120,
+      "recovered_fraction_channels": 1.0,
+      "recovered_fraction_streams": 1.0,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "snr0",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 120,
+      "recovered_fraction_channels": 1.0,
+      "recovered_fraction_streams": 1.0,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "compress",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 117,
+      "recovered_fraction_channels": 0.975,
+      "recovered_fraction_streams": 0.975,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 115,
+      "recovered_fraction_channels": 0.9583333333333334,
+      "recovered_fraction_streams": 0.9583333333333334,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "blur",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 116,
+      "recovered_fraction_channels": 0.9666666666666667,
+      "recovered_fraction_streams": 0.9666666666666667,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 240,
+      "channel_instances_recovered": 238,
+      "recovered_fraction_channels": 0.9916666666666667,
+      "recovered_fraction_streams": 0.9833333333333333,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "clean-fit",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 240,
+      "channel_instances_recovered": 235,
+      "recovered_fraction_channels": 0.9791666666666666,
+      "recovered_fraction_streams": 0.9583333333333334,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "envelope",
+      "condition": "snr20",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 0.0,
+      "detection_delay_median": NaN,
+      "streams_with_channel_dropped_at_return": 0,
+      "channel_instances_dropped_at_return": 0,
+      "channel_instances_recovered": 0,
+      "recovered_fraction_channels": NaN,
+      "recovered_fraction_streams": NaN,
+      "recovery_delay_median": NaN,
+      "recovery_delay_q25": NaN,
+      "recovery_delay_q75": NaN
+    },
+    {
+      "monitor": "envelope",
+      "condition": "snr10",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 0.0,
+      "detection_delay_median": NaN,
+      "streams_with_channel_dropped_at_return": 0,
+      "channel_instances_dropped_at_return": 0,
+      "channel_instances_recovered": 0,
+      "recovered_fraction_channels": NaN,
+      "recovered_fraction_streams": NaN,
+      "recovery_delay_median": NaN,
+      "recovery_delay_q25": NaN,
+      "recovery_delay_q75": NaN
+    },
+    {
+      "monitor": "envelope",
+      "condition": "snr0",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 0.0,
+      "detection_delay_median": NaN,
+      "streams_with_channel_dropped_at_return": 0,
+      "channel_instances_dropped_at_return": 0,
+      "channel_instances_recovered": 0,
+      "recovered_fraction_channels": NaN,
+      "recovered_fraction_streams": NaN,
+      "recovery_delay_median": NaN,
+      "recovery_delay_q25": NaN,
+      "recovery_delay_q75": NaN
+    },
+    {
+      "monitor": "envelope",
+      "condition": "compress",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 0.0,
+      "detection_delay_median": NaN,
+      "streams_with_channel_dropped_at_return": 0,
+      "channel_instances_dropped_at_return": 0,
+      "channel_instances_recovered": 0,
+      "recovered_fraction_channels": NaN,
+      "recovered_fraction_streams": NaN,
+      "recovery_delay_median": NaN,
+      "recovery_delay_q25": NaN,
+      "recovery_delay_q75": NaN
+    },
+    {
+      "monitor": "envelope",
+      "condition": "lowlight",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 111,
+      "recovered_fraction_channels": 0.925,
+      "recovered_fraction_streams": 0.925,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "envelope",
+      "condition": "blur",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 0.14166666666666666,
+      "detection_delay_median": 96.0,
+      "streams_with_channel_dropped_at_return": 17,
+      "channel_instances_dropped_at_return": 17,
+      "channel_instances_recovered": 1,
+      "recovered_fraction_channels": 0.058823529411764705,
+      "recovered_fraction_streams": 0.058823529411764705,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    },
+    {
+      "monitor": "envelope",
+      "condition": "snr10+compress",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 0.0,
+      "detection_delay_median": NaN,
+      "streams_with_channel_dropped_at_return": 0,
+      "channel_instances_dropped_at_return": 0,
+      "channel_instances_recovered": 0,
+      "recovered_fraction_channels": NaN,
+      "recovered_fraction_streams": NaN,
+      "recovery_delay_median": NaN,
+      "recovery_delay_q25": NaN,
+      "recovery_delay_q75": NaN
+    },
+    {
+      "monitor": "envelope",
+      "condition": "snr0+lowlight",
+      "n_streams": 120,
+      "detected_in_degraded_segment": 1.0,
+      "detection_delay_median": 32.0,
+      "streams_with_channel_dropped_at_return": 120,
+      "channel_instances_dropped_at_return": 120,
+      "channel_instances_recovered": 108,
+      "recovered_fraction_channels": 0.9,
+      "recovered_fraction_streams": 0.9,
+      "recovery_delay_median": 32.0,
+      "recovery_delay_q25": 32.0,
+      "recovery_delay_q75": 32.0
+    }
+  ],
+  "stats": [
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "snr20",
+      "mean_diff": 0.0,
+      "median_diff": 0.0,
+      "n_actors_better": 0,
+      "n_actors_worse": 0,
+      "wilcoxon_W": NaN,
+      "p_value": 1.0,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "snr10",
+      "mean_diff": 0.0,
+      "median_diff": 0.0,
+      "n_actors_better": 0,
+      "n_actors_worse": 0,
+      "wilcoxon_W": NaN,
+      "p_value": 1.0,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "snr0",
+      "mean_diff": 0.0,
+      "median_diff": 0.0,
+      "n_actors_better": 0,
+      "n_actors_worse": 0,
+      "wilcoxon_W": NaN,
+      "p_value": 1.0,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "compress",
+      "mean_diff": 0.0,
+      "median_diff": 0.0,
+      "n_actors_better": 0,
+      "n_actors_worse": 0,
+      "wilcoxon_W": NaN,
+      "p_value": 1.0,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "lowlight",
+      "mean_diff": 0.024374999999999997,
+      "median_diff": 0.04458333333333331,
+      "n_actors_better": 15,
+      "n_actors_worse": 8,
+      "wilcoxon_W": 104.0,
+      "p_value": 0.3010854851057816,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "blur",
+      "mean_diff": -0.003680555555555553,
+      "median_diff": 0.0,
+      "n_actors_better": 1,
+      "n_actors_worse": 3,
+      "wilcoxon_W": 1.0,
+      "p_value": 0.14412703481601533,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "snr10+compress",
+      "mean_diff": 0.0,
+      "median_diff": 0.0,
+      "n_actors_better": 0,
+      "n_actors_worse": 0,
+      "wilcoxon_W": NaN,
+      "p_value": 1.0,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (envelope) vs MCT LF",
+      "condition": "snr0+lowlight",
+      "mean_diff": -0.027256944444444445,
+      "median_diff": -0.0325,
+      "n_actors_better": 10,
+      "n_actors_worse": 13,
+      "wilcoxon_W": 113.0,
+      "p_value": 0.4470311611751585,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "snr20",
+      "mean_diff": -0.16954861111111108,
+      "median_diff": -0.16041666666666665,
+      "n_actors_better": 3,
+      "n_actors_worse": 21,
+      "wilcoxon_W": 8.0,
+      "p_value": 2.9802322387695312e-06,
+      "p_holm_8_conditions": 2.384185791015625e-05
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "snr10",
+      "mean_diff": -0.18711805555555552,
+      "median_diff": -0.19541666666666668,
+      "n_actors_better": 3,
+      "n_actors_worse": 21,
+      "wilcoxon_W": 13.0,
+      "p_value": 9.059720489639091e-05,
+      "p_holm_8_conditions": 0.0005435832293783455
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "snr0",
+      "mean_diff": 0.00836805555555555,
+      "median_diff": -0.0233333333333334,
+      "n_actors_better": 10,
+      "n_actors_worse": 14,
+      "wilcoxon_W": 144.5,
+      "p_value": 0.8751259430093796,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "compress",
+      "mean_diff": -0.0917013888888889,
+      "median_diff": -0.10083333333333333,
+      "n_actors_better": 1,
+      "n_actors_worse": 23,
+      "wilcoxon_W": 10.0,
+      "p_value": 6.328787719695951e-05,
+      "p_holm_8_conditions": 0.00044301514037871657
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "lowlight",
+      "mean_diff": 0.024375000000000004,
+      "median_diff": 0.04541666666666666,
+      "n_actors_better": 15,
+      "n_actors_worse": 8,
+      "wilcoxon_W": 104.0,
+      "p_value": 0.3010854851057816,
+      "p_holm_8_conditions": 0.9032564553173448
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "blur",
+      "mean_diff": -0.052708333333333336,
+      "median_diff": -0.05208333333333326,
+      "n_actors_better": 6,
+      "n_actors_worse": 17,
+      "wilcoxon_W": 50.0,
+      "p_value": 0.007439203931621479,
+      "p_holm_8_conditions": 0.03719601965810739
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "snr10+compress",
+      "mean_diff": 0.0,
+      "median_diff": 0.0,
+      "n_actors_better": 0,
+      "n_actors_worse": 0,
+      "wilcoxon_W": NaN,
+      "p_value": 1.0,
+      "p_holm_8_conditions": 1.0
+    },
+    {
+      "comparison": "MCT+SLG (clean-fit) vs MCT LF",
+      "condition": "snr0+lowlight",
+      "mean_diff": -0.0014930555555555576,
+      "median_diff": 0.0,
+      "n_actors_better": 3,
+      "n_actors_worse": 9,
+      "wilcoxon_W": 11.5,
+      "p_value": 0.030597130479338562,
+      "p_holm_8_conditions": 0.12238852191735425
+    }
+  ],
+  "checks": [
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (snr20)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (snr20)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (snr10)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (snr10)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (snr10)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (snr10)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (snr0)",
+      "max_abs_diff": 8.326672684688674e-17,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (snr0)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (snr0)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (snr0)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (compress)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (compress)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (compress)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (lowlight)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (blur)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (blur)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (blur)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (blur)",
+      "max_abs_diff": 6.661338147750939e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (snr10+compress)",
+      "max_abs_diff": 5.551115123125783e-17,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (snr10+compress)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (snr10+compress)",
+      "max_abs_diff": 5.551115123125783e-17,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 degraded vs slg_scenarios.csv (snr0+lowlight)",
+      "max_abs_diff": 5.551115123125783e-17,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained LF S1 cost vs slg_scenarios.csv (snr0+lowlight)",
+      "max_abs_diff": 4.440892098500626e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 degraded vs slg_scenarios.csv (snr0+lowlight)",
+      "max_abs_diff": 8.326672684688674e-17,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-trained SLG S1 cost vs slg_scenarios.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (snr20)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (snr20)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (snr10)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (snr10)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (snr10)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (snr0)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (snr0)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (snr0)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (compress)",
+      "max_abs_diff": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (compress)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (lowlight)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (blur)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (blur)",
+      "max_abs_diff": 6.661338147750939e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (blur)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (snr10+compress)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 degraded vs rev_mct2_slg_scenarios.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "MCT clean-fit SLG S1 cost vs rev_mct2_slg_scenarios.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "MCT LF S1 degraded vs rev_mct.csv (snr0+lowlight)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (snr20)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (snr10)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (snr10)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (snr10)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (snr10)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (snr0)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (snr0)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (snr0)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (snr0)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (blur)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (blur)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (blur)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (blur)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (snr10+compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection detection_rate vs slg_detection.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection delay_median vs slg_detection.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection pre_change_mark_rate vs slg_detection.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit detection wrong_channel_degraded_marks_per_1000_clips vs slg_detection.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-trained control SLG accuracy vs slg_control.csv",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (snr20)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (snr10)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (snr0)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (compress)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (blur)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (snr10+compress)",
+      "max_abs_diff": 1.1102230246251565e-16,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "check": "clean-fit recovery fraction vs slg_recovery.csv (snr0+lowlight)",
+      "max_abs_diff": 0.0,
+      "tolerance": 1e-09,
+      "passed": true
+    }
+  ]
+}
