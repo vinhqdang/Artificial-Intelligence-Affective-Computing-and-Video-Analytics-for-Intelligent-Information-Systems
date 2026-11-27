@@ -1,0 +1,4 @@
+monitor,clips,batch_median_total_ms,batch_us_per_clip,single_clip_loop_us_per_clip
+audio,1440,3.1186229998638737,2.165710416572135,187.19050347171003
+visual,1440,13.338091000150598,9.262563194549026,389.29290347166693
+"both (single-clip, added to QAG cost)",1440,,,576.483406943377

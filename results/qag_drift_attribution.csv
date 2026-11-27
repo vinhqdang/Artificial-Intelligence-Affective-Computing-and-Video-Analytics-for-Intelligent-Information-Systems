@@ -1,0 +1,17 @@
+condition,detector,n_runs,n_detected,attribution_accuracy
+snr20,PH,120,120,0.9583333333333334
+snr20,ADWIN,120,120,1.0
+snr10,PH,120,120,0.9583333333333334
+snr10,ADWIN,120,120,1.0
+snr0,PH,120,120,0.9916666666666667
+snr0,ADWIN,120,120,1.0
+compress,PH,120,120,0.9583333333333334
+compress,ADWIN,120,120,1.0
+lowlight,PH,120,120,0.9666666666666667
+lowlight,ADWIN,120,120,1.0
+blur,PH,120,120,0.95
+blur,ADWIN,120,120,1.0
+snr10+compress,PH,120,120,1.0
+snr10+compress,ADWIN,120,120,1.0
+snr0+lowlight,PH,120,120,1.0
+snr0+lowlight,ADWIN,120,120,1.0
