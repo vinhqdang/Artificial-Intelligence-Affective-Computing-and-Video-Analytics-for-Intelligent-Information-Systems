@@ -1,0 +1,9 @@
+condition,n_streams,detected_in_degraded_segment,detection_delay_median,streams_with_channel_dropped_at_return,channel_instances_dropped_at_return,channel_instances_recovered,recovered_fraction_channels,recovered_fraction_streams,recovery_delay_median,recovery_delay_q25,recovery_delay_q75
+snr20,120,1.0,32.0,120,120,119,0.9916666666666667,0.9916666666666667,32.0,32.0,32.0
+snr10,120,1.0,32.0,120,120,120,1.0,1.0,32.0,32.0,32.0
+snr0,120,1.0,32.0,120,120,120,1.0,1.0,32.0,32.0,32.0
+compress,120,1.0,32.0,120,120,117,0.975,0.975,32.0,32.0,32.0
+lowlight,120,1.0,32.0,120,120,115,0.9583333333333334,0.9583333333333334,32.0,32.0,32.0
+blur,120,1.0,32.0,120,120,116,0.9666666666666667,0.9666666666666667,32.0,32.0,32.0
+snr10+compress,120,1.0,32.0,120,240,238,0.9916666666666667,0.9833333333333333,32.0,32.0,32.0
+snr0+lowlight,120,1.0,32.0,120,240,235,0.9791666666666666,0.9583333333333334,32.0,32.0,32.0
