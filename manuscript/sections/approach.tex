@@ -1,0 +1,25 @@
+\section{Research Approach and Design Requirements}\label{sec:approach}
+
+We follow the design science research methodology of \citet{peffers2007}. In the terms of \citet{hevner2004}, the artifact is a method and its instantiation: an inference and monitoring component that a streaming video information system embeds to produce affect estimates. Relevance comes from the deployment problems in Section~\ref{sec:intro}. Rigour comes from the knowledge base in Section~\ref{sec:background} and from a controlled, reproducible evaluation. The evaluation is experimental. We measure the artifact's accuracy, cost, robustness, monitoring ability, calibration and group parity on held-out people under controlled degradations. This follows the predictive analytics tradition in IS, which judges a model by its out-of-sample performance \citep{shmueli2011}.
+
+\subsection{Design requirements}
+
+From the problem analysis and the literature we derive five design requirements (DRs).
+
+\begin{description}
+\item[DR1 (Generalisation)] The component should recognise expressed emotion for people it has not seen during training. Deployed systems meet new customers, patients or viewers, so we evaluate strictly across subjects.
+\item[DR2 (Cost awareness)] The component should allow the operator to trade accuracy against compute, and the trade-off should be measured in real resource units (CPU seconds per clip).
+\item[DR3 (Robustness)] The component should degrade gracefully when one input channel is impaired by noise, compression, low light or blur. Where possible it should rely on the healthier channel.
+\item[DR4 (Label-free monitoring)] The component should detect degradations without ground-truth labels and indicate which channel is affected. Operators can then respond, for example by alerting, re-routing or switching models.
+\item[DR5 (Accountability)] The component should produce calibrated probabilities, explain which modality drove a decision, and support audits of accuracy and calibration across demographic groups.
+\end{description}
+
+\subsection{Design cycles}
+
+The artifact evolved over three build-and-evaluate cycles. Each cycle responded to the evaluation findings of the previous one. We report all three because the failures of the early designs carry design knowledge.
+
+\begin{description}
+\item[Cycle 1: confidence-gated cascade.] A cheap first stage classifies each clip. Clips whose stage-1 confidence falls below a threshold are escalated to the full multimodal model (DR1, DR2). Evaluation showed good cost savings on clean data. Under audio noise, however, stage-1 confidence \emph{rose} while accuracy fell, so the cascade stopped escalating and a confidence-based drift monitor failed (DR3, DR4 unmet).
+\item[Cycle 2: input monitors with clip-level gating.] We added one label-free monitor per channel on the cheap input features, recalibrated the fused outputs, and dropped a channel from fusion for any clip whose monitor score exceeded a threshold. Stream-level detection was excellent. Clip-level gating helped under severe noise but was fragile: it was sensitive to the threshold and harmful when both channels were mildly degraded.
+\item[Cycle 3: stream-level gating.] The final design changes a channel's status only when the stream-level drift detector on that channel fires. A channel that recovers is re-enabled automatically.
+\end{description}

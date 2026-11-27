@@ -1,0 +1,113 @@
+\section{The Artifact}\label{sec:artifact}
+
+Figure~\ref{fig:architecture} shows the final artifact. Each incoming utterance-length clip is split into an audio channel and a visual channel. Cheap features are always computed for both channels, because the monitors need them. Expensive features are computed only when the cascade escalates a clip and the channel is currently trusted. Per-model classifiers produce calibrated class probabilities, which are combined by late fusion over the set of active models. A monitoring layer watches the input statistics of each channel and switches channels in and out of fusion.
+
+\begin{figure}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\footnotesize,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=9mm, minimum width=19mm, inner sep=2pt, fill=white},
+  cheap/.style={box, fill=blue!7},
+  exp/.style={box, fill=orange!12},
+  mon/.style={box, fill=green!8},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  darr/.style={-{Stealth[length=2mm]}, thick, dashed},
+  marr/.style={-{Stealth[length=2mm]}, thick, green!40!black}
+]
+\node[box] (in) at (0,1) {Video stream\\(utterance clips)};
+\node[box] (adec) at (2.7,2.6) {Audio decoding\\16 kHz mono};
+\node[box] (vdec) at (2.7,-0.6) {Frame sampling,\\face detection};
+\node[cheap] (a0) at (5.5,2.6) {A0: prosody};
+\node[cheap] (v0) at (5.5,-0.6) {V0: MobileNetV3};
+\node[exp] (a1) at (5.5,4.6) {A1: wav2vec 2.0};
+\node[exp] (v1) at (5.5,-2.6) {V1: CLIP ViT-B/32};
+\node[mon] (amon) at (8.4,3.6) {Audio monitor\\Mahalanobis + ADWIN};
+\node[mon] (vmon) at (8.4,-1.6) {Visual monitor\\Mahalanobis + ADWIN};
+\node[box] (s1) at (8.4,1) {Stage 1: late\\fusion + temp.};
+\node[box] (gate) at (11.2,1) {Escalate if $c<\tau$\\or channel alarm};
+\node[box] (fuse) at (14.2,1) {Late fusion over\\healthy channels};
+\node[box] (out) at (17.2,1) {Calibrated estimate,\\attribution, alarms};
+
+\draw[arr] (in.north) |- (adec.west);
+\draw[arr] (in.south) |- (vdec.west);
+\draw[arr] (adec) -- (a0);
+\draw[arr] (vdec) -- (v0);
+\draw[darr] (adec.north) |- (a1.west);
+\draw[darr] (vdec.south) |- (v1.west);
+\draw[arr] (a0.east) -| ([xshift=-3mm]s1.north);
+\draw[arr] (v0.east) -| ([xshift=-3mm]s1.south);
+\draw[marr] (a0.north) |- (amon.west);
+\draw[marr] (v0.south) |- (vmon.west);
+\draw[arr] (s1) -- (gate);
+\draw[arr] (gate) -- node[above]{yes} (fuse);
+\draw[arr] (fuse) -- (out);
+\draw[darr] (a1.east) -| ([xshift=3mm]fuse.north);
+\draw[darr] (v1.east) -| ([xshift=3mm]fuse.south);
+\draw[marr] (amon.east) -| ([xshift=-3mm]fuse.north);
+\draw[marr] ([xshift=-3mm]gate.north |- amon.east) -- ([xshift=-3mm]gate.north);
+\fill[green!40!black] ([xshift=-3mm]gate.north |- amon.east) circle (1.2pt);
+\draw[marr] (vmon.east) -| ([xshift=-3mm]fuse.south);
+\draw[marr] ([xshift=-3mm]gate.south |- vmon.east) -- ([xshift=-3mm]gate.south);
+\fill[green!40!black] ([xshift=-3mm]gate.south |- vmon.east) circle (1.2pt);
+\node[font=\scriptsize, green!40!black, above] at (12.5,3.6) {channel state};
+\node[font=\scriptsize, green!40!black, below] at (12.5,-1.6) {channel state};
+\draw[arr] ([xshift=4mm]gate.north) |- (16.6,2.3) -- ([xshift=-6mm]out.north);
+\node[above, font=\scriptsize] at (12.0,2.3) {no: emit stage-1 label};
+\end{tikzpicture}}
+\caption{Architecture of the final artifact. Blue: cheap extractors, always computed. Orange: expensive extractors, computed only on escalation and only for channels in the healthy state (dashed arrows). Green: label-free monitoring layer.}\label{fig:architecture}
+\end{figure}
+
+\subsection{Modality models and calibrated late fusion}
+
+Let $\mathcal{M}=\{\mathrm{A0},\mathrm{A1},\mathrm{V0},\mathrm{V1}\}$ be the set of feature extractors and $K=8$ the number of emotion classes. For each $m\in\mathcal{M}$ a multinomial logistic regression $f_m$ maps the standardised feature vector $x_m$ to logits $z_m\in\mathbb{R}^K$. Its probabilities are calibrated with a temperature $T_m$, fitted on out-of-fold predictions for the training people \citep{guo2017}:
+\begin{equation}
+p_m(k\mid x) = \frac{\exp(z_{m,k}/T_m)}{\sum_{j}\exp(z_{m,j}/T_m)}.
+\end{equation}
+For an active set $S\subseteq\mathcal{M}$, late fusion multiplies the calibrated posteriors (a product-of-experts rule; \citealp{kittler1998}) and applies a second temperature $T_S$ that is also fitted out-of-fold:
+\begin{equation}\label{eq:lf}
+p_S(k\mid x) \propto \exp\!\Big(\tfrac{1}{T_S}\sum_{m\in S}\log p_m(k\mid x)\Big).
+\end{equation}
+Late fusion was chosen deliberately. Any subset of modalities can be fused without retraining, which is what modality gating requires, and each modality's contribution to a decision can be read off additively (DR5). The second temperature corrects the over-confidence that the product rule produces when modalities are treated as independent.
+
+\subsection{Confidence-gated cascade}
+
+The cascade has a cheap stage-1 set $S_1$ and the full set $\mathcal{M}$. For a clip with stage-1 confidence $c=\max_k p_{S_1}(k\mid x)$, the cascade outputs $\arg\max_k p_{S_1}(k\mid x)$ if $c\ge\tau$ and otherwise escalates to $\arg\max_k p_{\mathcal{M}}(k\mid x)$. The expected cost per clip is
+\begin{equation}
+\bar{C}(\tau) = C(S_1) + r(\tau)\,\big[C(\mathcal{M})-C(S_1)\big],
+\end{equation}
+where $r(\tau)$ is the escalation rate and $C(\cdot)$ is the measured CPU time, including decoding and face detection. The threshold is chosen on out-of-fold training predictions as the smallest escalation rate whose accuracy is within one percentage point of the full model. This means the operating point is fixed before any test person is seen.
+
+\subsection{Label-free per-modality input monitors}
+
+For each channel $h\in\{\mathrm{audio},\mathrm{visual}\}$ the monitor uses the cheap features only (A0 for audio, V0 for visual). After standardisation, a principal component analysis (PCA) retaining 95\% of the variance is fitted on training clips. The score of a clip is its Mahalanobis distance in the PCA space,
+\begin{equation}
+d_h(x)=\sum_{j}\frac{u_j(x)^2}{\lambda_j},
+\end{equation}
+where $u_j$ is the $j$-th component score and $\lambda_j$ its variance. The score is normalised by a threshold $\theta_h$, the 99th percentile of $d_h$ on training people held out in an inner cross-validation. This approximates the distance distribution for \emph{unseen} people rather than for the people the PCA was fitted on. The normalised score $q_h=d_h/\theta_h$ exceeds one for about 1\% of clean clips from new people. Computing a score takes microseconds once the cheap features exist.
+
+Each channel's stream of $\log q_h$ values, standardised by its out-of-fold mean and standard deviation, is fed to an ADWIN detector \citep{bifet2007}. ADWIN keeps a variable-length window of recent values and signals a change when two sub-windows have significantly different means. An alarm on a channel is attributed to that channel, which gives the operator a diagnosis as well as an alert.
+
+\subsection{Gating policies}
+
+Cycle~2 used \emph{clip-level gating}. If $q_h>1$ for a clip, the models of channel $h$ are removed from the fused set for that clip and the clip is escalated. If both channels or neither are flagged, all models are used. Cycle~3 uses \emph{stream-level gating}, summarised in Algorithm~\ref{alg:slg}. Here a channel's state changes only when its ADWIN detector fires. The direction of the change decides between \emph{degraded} and \emph{healthy}. We evaluate stream-level gating on the full fused model, so its effect on robustness is measured separately from the cascade. The same channel state can be passed to the cascade (Fig.~\ref{fig:architecture}). While a channel is degraded its expensive model is not computed, which also saves compute. Its cheap features are still computed so that recovery can be detected.
+
+\begin{algorithm}[t]
+\caption{Stream-level gating (Cycle 3)}\label{alg:slg}
+\begin{algorithmic}[1]
+\Require clip stream $x_1,x_2,\dots$; monitors $(d_h,\theta_h,\mu_h,\sigma_h)$ and ADWIN detectors $D_h$ for $h\in\{\mathrm{a},\mathrm{v}\}$; threshold $\tau$; margin $\delta=1$
+\State $\mathit{state}_h\gets\textsc{healthy}$ for both channels
+\For{$t=1,2,\dots$}
+  \State compute cheap features A0, V0 of $x_t$; $s_h\gets(\log(d_h(x_t)/\theta_h)-\mu_h)/\sigma_h$
+  \State $S\gets$ models of healthy channels; \textbf{if} $S=\emptyset$ \textbf{then} $S\gets\mathcal{M}$
+  \State emit $\arg\max_k p_S(k\mid x_t)$ (Eq.~\ref{eq:lf})
+  \For{$h\in\{\mathrm{a},\mathrm{v}\}$}
+    \State $D_h.\textsc{update}(s_h)$
+    \If{$D_h$ signals a change}
+       \State $\bar{s}\gets$ mean of the last 15 values of $s_h$
+       \State $\mathit{state}_h\gets\textsc{degraded}$ if $\bar{s}>\delta$ else $\textsc{healthy}$ \Comment{applies from $t+1$}
+    \EndIf
+  \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}

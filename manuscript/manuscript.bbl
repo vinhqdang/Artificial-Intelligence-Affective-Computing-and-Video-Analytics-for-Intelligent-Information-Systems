@@ -1,0 +1,346 @@
+\begin{thebibliography}{61}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+\providecommand{\eprint}[2][]{\url{#2}}
+ \bibcommenthead
+
+\bibitem[{Alarfaj and Khan(2026)}]{alarfaj2026}
+Alarfaj FK, Khan HU (2026) A pyramid vision transformer--based framework for
+  television video genre classification in multimedia analysis. Information
+  Systems Frontiers 28(3):1211--1231. \doi{10.1007/s10796-026-10749-9}
+
+\bibitem[{Ananthanarayanan et~al.(2017)Ananthanarayanan, Bahl, Bod{\'i}k,
+  Chintalapudi, Philipose, Ravindranath, and Sinha}]{ananthanarayanan2017}
+Ananthanarayanan G, Bahl P, Bod{\'i}k P, et~al (2017) Real-time video
+  analytics: The killer app for edge computing. Computer 50(10):58--67.
+  \doi{10.1109/MC.2017.3641638}
+
+\bibitem[{Antonov et~al.(2024)Antonov, Kumar, Wei, Headley, Wood, and
+  Montana}]{antonov2024}
+Antonov A, Kumar SS, Wei J, et~al (2024) Decoding viewer emotions in video ads.
+  Scientific Reports 14(1):26382. \doi{10.1038/s41598-024-76968-9}
+
+\bibitem[{Baevski et~al.(2020)Baevski, Zhou, Mohamed, and Auli}]{baevski2020}
+Baevski A, Zhou Y, Mohamed A, et~al (2020) wav2vec 2.0: A framework for
+  self-supervised learning of speech representations. In: Advances in Neural
+  Information Processing Systems, pp 12449--12460
+
+\bibitem[{Bagher~Zadeh et~al.(2018)Bagher~Zadeh, Liang, Poria, Cambria, and
+  Morency}]{zadeh2018}
+Bagher~Zadeh A, Liang PP, Poria S, et~al (2018) Multimodal language analysis in
+  the wild: {CMU-MOSEI} dataset and interpretable dynamic fusion graph. In:
+  Proceedings of the 56th Annual Meeting of the Association for Computational
+  Linguistics, pp 2236--2246, \doi{10.18653/v1/P18-1208}
+
+\bibitem[{Baltru{\v{s}}aitis et~al.(2019)Baltru{\v{s}}aitis, Ahuja, and
+  Morency}]{baltrusaitis2019}
+Baltru{\v{s}}aitis T, Ahuja C, Morency LP (2019) Multimodal machine learning: A
+  survey and taxonomy. IEEE Transactions on Pattern Analysis and Machine
+  Intelligence 41(2):423--443. \doi{10.1109/TPAMI.2018.2798607}
+
+\bibitem[{Barrett et~al.(2019)Barrett, Adolphs, Marsella, Martinez, and
+  Pollak}]{barrett2019}
+Barrett LF, Adolphs R, Marsella S, et~al (2019) Emotional expressions
+  reconsidered: Challenges to inferring emotion from human facial movements.
+  Psychological Science in the Public Interest 20(1):1--68.
+  \doi{10.1177/1529100619832930}
+
+\bibitem[{Berente et~al.(2021)Berente, Gu, Recker, and Santhanam}]{berente2021}
+Berente N, Gu B, Recker J, et~al (2021) Managing artificial intelligence. MIS
+  Quarterly 45(3):1433--1450. \doi{10.25300/MISQ/2021/16274}
+
+\bibitem[{Bifet and Gavald{\`a}(2007)}]{bifet2007}
+Bifet A, Gavald{\`a} R (2007) Learning from time-changing data with adaptive
+  windowing. In: Proceedings of the 2007 SIAM International Conference on Data
+  Mining, pp 443--448, \doi{10.1137/1.9781611972771.42}
+
+\bibitem[{Busso et~al.(2008)Busso, Bulut, Lee, Kazemzadeh, Mower, Kim, Chang,
+  Lee, and Narayanan}]{busso2008}
+Busso C, Bulut M, Lee CC, et~al (2008) {IEMOCAP}: interactive emotional dyadic
+  motion capture database. Language Resources and Evaluation 42(4):335--359.
+  \doi{10.1007/s10579-008-9076-6}
+
+\bibitem[{Cao et~al.(2014)Cao, Cooper, Keutmann, Gur, Nenkova, and
+  Verma}]{cao2014}
+Cao H, Cooper DG, Keutmann MK, et~al (2014) {CREMA-D}: Crowd-sourced emotional
+  multimodal actors dataset. IEEE Transactions on Affective Computing
+  5(4):377--390. \doi{10.1109/TAFFC.2014.2336244}
+
+\bibitem[{Cui et~al.(2025)Cui, Zhao, Ng, and Lu}]{cui2025}
+Cui L, Zhao J, Ng KC, et~al (2025) Feeling over thinking: A video analytics
+  framework for measuring empathy from video recordings. SSRN Working Paper,
+  \doi{10.2139/ssrn.5260163}
+
+\bibitem[{Dem{\v{s}}ar(2006)}]{demsar2006}
+Dem{\v{s}}ar J (2006) Statistical comparisons of classifiers over multiple data
+  sets. Journal of Machine Learning Research 7:1--30
+
+\bibitem[{Dwivedi et~al.(2021)Dwivedi, Hughes, Ismagilova et~al.}]{dwivedi2021}
+Dwivedi YK, Hughes L, Ismagilova E, et~al (2021) Artificial intelligence
+  ({AI}): Multidisciplinary perspectives on emerging challenges, opportunities,
+  and agenda for research, practice and policy. International Journal of
+  Information Management 57:101994. \doi{10.1016/j.ijinfomgt.2019.08.002}
+
+\bibitem[{{European Parliament and Council of the European
+  Union}(2024)}]{euaiact2024}
+{European Parliament and Council of the European Union} (2024) Regulation
+  ({EU}) 2024/1689 laying down harmonised rules on artificial intelligence
+  (artificial intelligence act). Official Journal of the European Union, L
+  series, 12 July 2024
+
+\bibitem[{Eyben et~al.(2016)Eyben, Scherer, Schuller, Sundberg, Andr{\'e},
+  Busso, Devillers, Epps, Laukka, Narayanan, and Truong}]{eyben2016}
+Eyben F, Scherer KR, Schuller BW, et~al (2016) The {Geneva} minimalistic
+  acoustic parameter set ({GeMAPS}) for voice research and affective computing.
+  IEEE Transactions on Affective Computing 7(2):190--202.
+  \doi{10.1109/TAFFC.2015.2457417}
+
+\bibitem[{Gama et~al.(2014)Gama, {\v{Z}}liobait{\.e}, Bifet, Pechenizkiy, and
+  Bouchachia}]{gama2014}
+Gama J, {\v{Z}}liobait{\.e} I, Bifet A, et~al (2014) A survey on concept drift
+  adaptation. ACM Computing Surveys 46(4):1--37. \doi{10.1145/2523813}
+
+\bibitem[{Gong et~al.(2025)Gong, Yang, Fang, Ju, Guo, Zhu, Boukerche
+  et~al.}]{gong2025}
+Gong L, Yang H, Fang G, et~al (2025) A survey on video analytics in
+  cloud-edge-terminal collaborative systems. arXiv preprint arXiv:2502.06581
+
+\bibitem[{Guo et~al.(2017)Guo, Pleiss, Sun, and Weinberger}]{guo2017}
+Guo C, Pleiss G, Sun Y, et~al (2017) On calibration of modern neural networks.
+  In: Proceedings of the 34th International Conference on Machine Learning, pp
+  1321--1330
+
+\bibitem[{Hardt et~al.(2016)Hardt, Price, and Srebro}]{hardt2016}
+Hardt M, Price E, Srebro N (2016) Equality of opportunity in supervised
+  learning. In: Advances in Neural Information Processing Systems, pp
+  3315--3323
+
+\bibitem[{Hendrycks and Dietterich(2019)}]{hendrycks2019}
+Hendrycks D, Dietterich T (2019) Benchmarking neural network robustness to
+  common corruptions and perturbations. In: International Conference on
+  Learning Representations (ICLR)
+
+\bibitem[{Hendrycks and Gimpel(2017)}]{hendrycks2017}
+Hendrycks D, Gimpel K (2017) A baseline for detecting misclassified and
+  out-of-distribution examples in neural networks. In: International Conference
+  on Learning Representations (ICLR)
+
+\bibitem[{Hevner et~al.(2004)Hevner, March, Park, and Ram}]{hevner2004}
+Hevner AR, March ST, Park J, et~al (2004) Design science in information systems
+  research. MIS Quarterly 28(1):75--105. \doi{10.2307/25148625}
+
+\bibitem[{Howard et~al.(2019)Howard, Sandler, Chen, Wang, Chen, Tan, Chu,
+  Vasudevan, Zhu, Pang, Adam, and Le}]{howard2019}
+Howard A, Sandler M, Chen B, et~al (2019) Searching for {MobileNetV3}. In:
+  Proceedings of the IEEE/CVF International Conference on Computer Vision, pp
+  1314--1324, \doi{10.1109/ICCV.2019.00140}
+
+\bibitem[{Jiang et~al.(2018)Jiang, Ananthanarayanan, Bodik, Sen, and
+  Stoica}]{jiang2018}
+Jiang J, Ananthanarayanan G, Bodik P, et~al (2018) Chameleon: Scalable
+  adaptation of video analytics. In: Proceedings of the 2018 Conference of the
+  ACM Special Interest Group on Data Communication (SIGCOMM), pp 253--266,
+  \doi{10.1145/3230543.3230574}
+
+\bibitem[{Kang et~al.(2017)Kang, Emmons, Abuzaid, Bailis, and
+  Zaharia}]{kang2017}
+Kang D, Emmons J, Abuzaid F, et~al (2017) {NoScope}: Optimizing neural network
+  queries over video at scale. Proceedings of the VLDB Endowment
+  10(11):1586--1597. \doi{10.14778/3137628.3137664}
+
+\bibitem[{Kittler et~al.(1998)Kittler, Hatef, Duin, and Matas}]{kittler1998}
+Kittler J, Hatef M, Duin RPW, et~al (1998) On combining classifiers. IEEE
+  Transactions on Pattern Analysis and Machine Intelligence 20(3):226--239.
+  \doi{10.1109/34.667881}
+
+\bibitem[{Li and Deng(2022)}]{li2022fer}
+Li S, Deng W (2022) Deep facial expression recognition: A survey. IEEE
+  Transactions on Affective Computing 13(3):1195--1215.
+  \doi{10.1109/TAFFC.2020.2981446}
+
+\bibitem[{Lin et~al.(2024)Lin, Ye, Zhu, Cui, Ning, Jin, and Yuan}]{lin2024}
+Lin B, Ye Y, Zhu B, et~al (2024) {Video-LLaVA}: Learning united visual
+  representation by alignment before projection. In: Proceedings of the 2024
+  Conference on Empirical Methods in Natural Language Processing, pp
+  5971--5984, \doi{10.18653/v1/2024.emnlp-main.342}
+
+\bibitem[{Livingstone and Russo(2018)}]{livingstone2018}
+Livingstone SR, Russo FA (2018) The {Ryerson} audio-visual database of
+  emotional speech and song ({RAVDESS}): A dynamic, multimodal set of facial
+  and vocal expressions in {North American English}. PLOS ONE 13(5):e0196391.
+  \doi{10.1371/journal.pone.0196391}
+
+\bibitem[{Lu et~al.(2019)Lu, Liu, Dong, Gu, Gama, and Zhang}]{lu2019drift}
+Lu J, Liu A, Dong F, et~al (2019) Learning under concept drift: A review. IEEE
+  Transactions on Knowledge and Data Engineering 31(12):2346--2363.
+  \doi{10.1109/TKDE.2018.2876857}
+
+\bibitem[{Mao et~al.(2024)Mao, Lee, and Hong}]{mao2024}
+Mao M, Lee A, Hong M (2024) Deep learning innovations in video classification:
+  A survey on techniques and dataset evaluations. Electronics 13(14):2732.
+  \doi{10.3390/electronics13142732}
+
+\bibitem[{McFee et~al.(2015)McFee, Raffel, Liang, Ellis, McVicar, Battenberg,
+  and Nieto}]{mcfee2015}
+McFee B, Raffel C, Liang D, et~al (2015) librosa: Audio and music signal
+  analysis in python. In: Proceedings of the 14th Python in Science Conference,
+  pp 18--24, \doi{10.25080/Majora-7b98e3ed-003}
+
+\bibitem[{Mehrabi et~al.(2021)Mehrabi, Morstatter, Saxena, Lerman, and
+  Galstyan}]{mehrabi2021}
+Mehrabi N, Morstatter F, Saxena N, et~al (2021) A survey on bias and fairness
+  in machine learning. ACM Computing Surveys 54(6):1--35. \doi{10.1145/3457607}
+
+\bibitem[{Mishra et~al.(2026)Mishra, Parab, Saha, Gu, and Kato}]{mishra2026}
+Mishra P, Parab S, Saha T, et~al (2026) A low-latency video analytics framework
+  for emotion recognition and stress inference using region-aware {Swin--FANE}
+  and temporal modelling. Information Systems Frontiers
+  \doi{10.1007/s10796-026-10789-1}
+
+\bibitem[{Mollahosseini et~al.(2019)Mollahosseini, Hasani, and
+  Mahoor}]{mollahosseini2019}
+Mollahosseini A, Hasani B, Mahoor MH (2019) {AffectNet}: A database for facial
+  expression, valence, and arousal computing in the wild. IEEE Transactions on
+  Affective Computing 10(1):18--31. \doi{10.1109/TAFFC.2017.2740923}
+
+\bibitem[{Page(1954)}]{page1954}
+Page ES (1954) Continuous inspection schemes. Biometrika 41(1/2):100--115.
+  \doi{10.1093/biomet/41.1-2.100}
+
+\bibitem[{Pakdaman~Naeini et~al.(2015)Pakdaman~Naeini, Cooper, and
+  Hauskrecht}]{naeini2015}
+Pakdaman~Naeini M, Cooper G, Hauskrecht M (2015) Obtaining well calibrated
+  probabilities using bayesian binning. In: Proceedings of the AAAI Conference
+  on Artificial Intelligence, pp 2901--2907, \doi{10.1609/aaai.v29i1.9602}
+
+\bibitem[{Pedregosa et~al.(2011)Pedregosa, Varoquaux, Gramfort, Michel,
+  Thirion, Grisel, Blondel, Prettenhofer, Weiss, Dubourg, Vanderplas, Passos,
+  Cournapeau, Brucher, Perrot, and Duchesnay}]{pedregosa2011}
+Pedregosa F, Varoquaux G, Gramfort A, et~al (2011) Scikit-learn: Machine
+  learning in {Python}. Journal of Machine Learning Research 12:2825--2830
+
+\bibitem[{Peffers et~al.(2007)Peffers, Tuunanen, Rothenberger, and
+  Chatterjee}]{peffers2007}
+Peffers K, Tuunanen T, Rothenberger MA, et~al (2007) A design science research
+  methodology for information systems research. Journal of Management
+  Information Systems 24(3):45--77. \doi{10.2753/MIS0742-1222240302}
+
+\bibitem[{Pepino et~al.(2021)Pepino, Riera, and Ferrer}]{pepino2021}
+Pepino L, Riera P, Ferrer L (2021) Emotion recognition from speech using
+  wav2vec 2.0 embeddings. In: Proceedings of Interspeech 2021, pp 3400--3404,
+  \doi{10.21437/Interspeech.2021-703}
+
+\bibitem[{Picard(1997)}]{picard1997}
+Picard RW (1997) Affective Computing. MIT Press, Cambridge, MA,
+  \doi{10.7551/mitpress/1140.001.0001}
+
+\bibitem[{Poria et~al.(2017)Poria, Cambria, Bajpai, and Hussain}]{poria2017}
+Poria S, Cambria E, Bajpai R, et~al (2017) A review of affective computing:
+  From unimodal analysis to multimodal fusion. Information Fusion 37:98--125.
+  \doi{10.1016/j.inffus.2017.02.003}
+
+\bibitem[{Rabanser et~al.(2019)Rabanser, G{\"u}nnemann, and
+  Lipton}]{rabanser2019}
+Rabanser S, G{\"u}nnemann S, Lipton ZC (2019) Failing loudly: An empirical
+  study of methods for detecting dataset shift. In: Advances in Neural
+  Information Processing Systems, pp 1396--1408
+
+\bibitem[{Radford et~al.(2021)Radford, Kim, Hallacy, Ramesh, Goh, Agarwal,
+  Sastry, Askell, Mishkin, Clark, Krueger, and Sutskever}]{radford2021}
+Radford A, Kim JW, Hallacy C, et~al (2021) Learning transferable visual models
+  from natural language supervision. In: Proceedings of the 38th International
+  Conference on Machine Learning, pp 8748--8763
+
+\bibitem[{Rai(2020)}]{rai2020}
+Rai A (2020) Explainable {AI}: from black box to glass box. Journal of the
+  Academy of Marketing Science 48(1):137--141. \doi{10.1007/s11747-019-00710-5}
+
+\bibitem[{Schuller(2018)}]{schuller2018}
+Schuller BW (2018) Speech emotion recognition: Two decades in a nutshell,
+  benchmarks, and ongoing trends. Communications of the ACM 61(5):90--99.
+  \doi{10.1145/3129340}
+
+\bibitem[{Sculley et~al.(2015)Sculley, Holt, Golovin, Davydov, Phillips, Ebner,
+  Chaudhary, Young, Crespo, and Dennison}]{sculley2015}
+Sculley D, Holt G, Golovin D, et~al (2015) Hidden technical debt in machine
+  learning systems. In: Advances in Neural Information Processing Systems, pp
+  2503--2511
+
+\bibitem[{Shmueli and Koppius(2011)}]{shmueli2011}
+Shmueli G, Koppius OR (2011) Predictive analytics in information systems
+  research. MIS Quarterly 35(3):553--572. \doi{10.2307/23042796}
+
+\bibitem[{Stappen et~al.(2022)Stappen, Baird, Lienhart, B{\"a}tz, and
+  Schuller}]{stappen2022}
+Stappen L, Baird A, Lienhart M, et~al (2022) An estimation of online video user
+  engagement from features of time- and value-continuous, dimensional emotions.
+  Frontiers in Computer Science 4:773154. \doi{10.3389/fcomp.2022.773154}
+
+\bibitem[{Teerapittayanon et~al.(2016)Teerapittayanon, McDanel, and
+  Kung}]{teerapittayanon2016}
+Teerapittayanon S, McDanel B, Kung HT (2016) {BranchyNet}: Fast inference via
+  early exiting from deep neural networks. In: 2016 23rd International
+  Conference on Pattern Recognition (ICPR), pp 2464--2469,
+  \doi{10.1109/ICPR.2016.7900006}
+
+\bibitem[{Tsai et~al.(2019)Tsai, Bai, Liang, Kolter, Morency, and
+  Salakhutdinov}]{tsai2019}
+Tsai YHH, Bai S, Liang PP, et~al (2019) Multimodal transformer for unaligned
+  multimodal language sequences. In: Proceedings of the 57th Annual Meeting of
+  the Association for Computational Linguistics, pp 6558--6569,
+  \doi{10.18653/v1/P19-1656}
+
+\bibitem[{Tzirakis et~al.(2017)Tzirakis, Trigeorgis, Nicolaou, Schuller, and
+  Zafeiriou}]{tzirakis2017}
+Tzirakis P, Trigeorgis G, Nicolaou MA, et~al (2017) End-to-end multimodal
+  emotion recognition using deep neural networks. IEEE Journal of Selected
+  Topics in Signal Processing 11(8):1301--1309.
+  \doi{10.1109/JSTSP.2017.2764438}
+
+\bibitem[{Viola and Jones(2001)}]{viola2001}
+Viola P, Jones M (2001) Rapid object detection using a boosted cascade of
+  simple features. In: Proceedings of the 2001 IEEE Computer Society Conference
+  on Computer Vision and Pattern Recognition, pp I--511--I--518,
+  \doi{10.1109/CVPR.2001.990517}
+
+\bibitem[{Wagner et~al.(2023)Wagner, Triantafyllopoulos, Wierstorf, Schmitt,
+  Burkhardt, Eyben, and Schuller}]{wagner2023}
+Wagner J, Triantafyllopoulos A, Wierstorf H, et~al (2023) Dawn of the
+  transformer era in speech emotion recognition: Closing the valence gap. IEEE
+  Transactions on Pattern Analysis and Machine Intelligence 45(9):10745--10759.
+  \doi{10.1109/TPAMI.2023.3263585}
+
+\bibitem[{Wang et~al.(2020)Wang, Tran, and Feiszli}]{wang2020}
+Wang W, Tran D, Feiszli M (2020) What makes training multi-modal classification
+  networks hard? In: Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition, pp 12692--12702, \doi{10.1109/CVPR42600.2020.01271}
+
+\bibitem[{Wilcoxon(1945)}]{wilcoxon1945}
+Wilcoxon F (1945) Individual comparisons by ranking methods. Biometrics
+  Bulletin 1(6):80--83. \doi{10.2307/3001968}
+
+\bibitem[{Wu et~al.(2023)Wu, Peng, and Yu}]{wu2023yunet}
+Wu W, Peng H, Yu S (2023) {YuNet}: A tiny millisecond-level face detector.
+  Machine Intelligence Research 20(5):656--665. \doi{10.1007/s11633-023-1423-y}
+
+\bibitem[{Xu et~al.(2020)Xu, White, Kalkan, and Gunes}]{xu2020}
+Xu T, White J, Kalkan S, et~al (2020) Investigating bias and fairness in facial
+  expression recognition. In: Computer Vision -- ECCV 2020 Workshops, Lecture
+  Notes in Computer Science, vol 12540. Springer, pp 506--523,
+  \doi{10.1007/978-3-030-65414-6_35}
+
+\bibitem[{Yin et~al.(2014)Yin, Bond, and Zhang}]{yin2014}
+Yin D, Bond SD, Zhang H (2014) Anxious or angry? effects of discrete emotions
+  on the perceived helpfulness of online reviews. MIS Quarterly 38(2):539--560.
+  \doi{10.25300/MISQ/2014/38.2.10}
+
+\bibitem[{Zadeh et~al.(2017)Zadeh, Chen, Poria, Cambria, and
+  Morency}]{zadeh2017}
+Zadeh A, Chen M, Poria S, et~al (2017) Tensor fusion network for multimodal
+  sentiment analysis. In: Proceedings of the 2017 Conference on Empirical
+  Methods in Natural Language Processing, pp 1103--1114,
+  \doi{10.18653/v1/D17-1115}
+
+\end{thebibliography}

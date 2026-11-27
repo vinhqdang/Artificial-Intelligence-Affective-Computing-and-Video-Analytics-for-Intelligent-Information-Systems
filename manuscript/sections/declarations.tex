@@ -1,0 +1,40 @@
+\bmhead{Acknowledgements}
+The author thanks the creators of the RAVDESS corpus for making their data publicly available for research.
+
+\section*{Declarations}
+
+\bmhead{Funding}
+No funding was received for conducting this study.
+
+\bmhead{Competing interests}
+The author has no competing interests to declare that are relevant to the content of this article.
+
+\bmhead{Ethics approval and consent to participate}
+This study used only the publicly available RAVDESS corpus \citep{livingstone2018}, which was collected with the informed consent of the participating actors and is distributed for research use. No new data were collected from human participants.
+
+\bmhead{Data availability}
+The RAVDESS corpus is available from Zenodo (\url{https://doi.org/10.5281/zenodo.1188976}) under a CC BY-NC-SA 4.0 licence.
+
+\bmhead{Code availability}
+The feature extraction, experiment and analysis code, together with all result tables, is available at \url{https://github.com/vinhqdang/Artificial-Intelligence-Affective-Computing-and-Video-Analytics-for-Intelligent-Information-Systems}.
+
+\bmhead{Author contributions}
+Quang-Vinh Dang conceived and designed the study, performed the analysis and wrote the manuscript.
+
+\begin{appendices}
+
+\section{Additional results}\label{app:extra}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/confusion.pdf}
+\caption{Row-normalised confusion matrix of F-all (late fusion of all four models) on held-out actors, clean condition.}\label{fig:confusion}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/layer_probe.pdf}
+\caption{Subject-independent accuracy of a logistic-regression probe on each single wav2vec~2.0 layer (clean condition, $C=0.1$). The layer-averaged representation used in the artifact reaches 0.721.}\label{fig:layers}
+\end{figure}
+
+\end{appendices}

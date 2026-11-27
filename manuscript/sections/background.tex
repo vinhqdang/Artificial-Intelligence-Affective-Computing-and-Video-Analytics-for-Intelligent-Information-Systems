@@ -1,0 +1,45 @@
+\section{Background and Related Work}\label{sec:background}
+
+\subsection{Affective computing with audio-visual data}
+
+Affective computing studies systems that recognise, interpret and respond to human emotion \citep{picard1997}. Early systems relied on hand-crafted descriptors: facial action and geometry features for the face, and prosodic and spectral descriptors such as pitch, energy and mel-frequency cepstral coefficients for the voice \citep{schuller2018}. The extended Geneva minimalistic acoustic parameter set standardised a compact voice feature set for this purpose \citep{eyben2016}. Deep learning moved the field towards learned representations. Convolutional networks trained on large in-the-wild datasets such as AffectNet now dominate facial expression recognition \citep{mollahosseini2019,li2022fer}. In speech, self-supervised transformers such as wav2vec~2.0 \citep{baevski2020} provide general representations that, with a light classifier on top, recognise emotion well \citep{pepino2021,wagner2023}.
+
+Emotion is expressed through several channels at once, so multimodal fusion has been a central theme \citep{poria2017,baltrusaitis2019}. Fusion can operate on features (early fusion), on decisions (late fusion), or inside a joint model. Joint models include tensor fusion \citep{zadeh2017}, cross-modal transformers \citep{tsai2019} and end-to-end audio-visual networks \citep{tzirakis2017}. Joint training is not always better than combining separately trained unimodal models, because the modalities overfit and converge at different rates \citep{wang2020}. Late fusion of calibrated probabilities is the classical alternative \citep{kittler1998}. It is modular, and it lets a system drop or add a modality at run time, which matters for the designs studied here. Benchmarks such as IEMOCAP \citep{busso2008}, CREMA-D \citep{cao2014}, CMU-MOSEI \citep{zadeh2018} and RAVDESS \citep{livingstone2018} have driven progress.
+
+Large vision--language models extend the toolbox further. CLIP aligns images and text through contrastive pre-training and supports zero-shot classification from text prompts \citep{radford2021}. Video-language models such as Video-LLaVA \citep{lin2024} let a system describe and reason about video content in natural language. Whether these general-purpose models capture fine-grained affect without task-specific adaptation is still being established. We include CLIP both as a feature extractor and as a zero-shot classifier to test this.
+
+Applied studies show the business value of affect signals in video. \citet{stappen2022} estimated user engagement with online videos from continuous emotion features. \citet{antonov2024} predicted viewers' emotional responses to video advertisements from combined audio and visual input. \citet{cui2025} measured empathy through emotional mimicry in executive interview videos and linked it to firm outcomes. Within this special issue, \citet{mishra2026} proposed a low-latency video framework for emotion recognition and stress inference, and \citet{alarfaj2026} used a pyramid vision transformer for television genre classification. These studies show what affect signals can predict. They do not study how a deployed component should manage its own cost and reliability.
+
+\subsection{Cost-aware video analytics}
+
+Analysing video at scale is expensive, and systems research has developed several ways to reduce the cost. NoScope trains cheap specialised models and a difference detector that filter frames before an expensive reference model is consulted \citep{kang2017}. Chameleon adapts the configuration of a video pipeline, such as frame rate, resolution and model, over time to keep accuracy at a lower cost \citep{jiang2018}. Edge computing moves analytics close to the camera to meet latency and bandwidth limits \citep{ananthanarayanan2017,gong2025}. At the model level, the cascade idea goes back to the boosted detector cascade of \citet{viola2001}. Early-exit networks such as BranchyNet stop computation once an intermediate classifier is confident \citep{teerapittayanon2016}. All of these methods assume that confidence, or agreement with a cheaper model, is a reliable signal of when more computation is needed. That assumption is rarely tested under input degradation, and it has not been examined for multimodal affect recognition.
+
+\subsection{Drift, calibration and accountable affective AI}
+
+Production machine learning systems face concept and data drift \citep{gama2014,lu2019drift} and accumulate maintenance debt when monitoring is neglected \citep{sculley2015}. Drift detectors for streams include the Page--Hinkley test \citep{page1954} and ADWIN, which keeps an adaptive window and signals when its two sub-windows differ significantly \citep{bifet2007}. When labels are delayed or unavailable, which is the normal case for affect, monitoring must use label-free signals. These include the maximum softmax probability \citep{hendrycks2017} and two-sample tests on inputs or representations \citep{rabanser2019}. Common corruptions such as noise, blur and compression are known to degrade vision models substantially \citep{hendrycks2019}.
+
+Confidence is useful only if it is calibrated. Modern neural networks are often over-confident, and temperature scaling is a simple post-hoc remedy \citep{guo2017}. The expected calibration error measures the gap between confidence and accuracy \citep{naeini2015}. Fairness research has shown that error rates can differ across demographic groups \citep{hardt2016,mehrabi2021}, and facial expression recognition is no exception \citep{xu2020}. A deeper critique questions whether facial movements map onto internal emotional states at all \citep{barrett2019}. This is why we treat model outputs as estimates of \emph{expressed} emotion, not of felt emotion. Regulators have responded as well. The EU Artificial Intelligence Act prohibits emotion recognition in workplaces and education, except for medical or safety reasons, and classifies other emotion recognition systems as high-risk \citep{euaiact2024}. IS scholarship has called for explainable, managed AI that keeps humans accountable for automated inferences \citep{rai2020,berente2021,dwivedi2021}.
+
+\subsection{Research gap}
+
+Table~\ref{tab:gap} positions this study. The affective computing literature optimises recognition accuracy on curated data. The video systems literature optimises cost but rarely deals with affect or with input degradation. The MLOps and drift literature offers monitors but has seldom examined them for multimodal affect models, where degradation may hit one channel and leave the other intact. We are not aware of work that designs and evaluates an affective video component for cost, label-free degradation monitoring, modality-level response and accountability together. The interactions between these properties are the subject of this paper. Two examples are whether a cost-saving cascade still escalates when a channel degrades, and whether a monitor can tell which channel to distrust.
+
+\begin{table}[t]
+\caption{Positioning of this study relative to representative streams of related work. \checkmark: addressed; $\circ$: partially addressed; --: not addressed.}\label{tab:gap}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.36\textwidth}ccccc@{}}
+\toprule
+Stream of work & Multimodal & Cost-aware & Degradation & Label-free & Calibration/ \\
+ & affect & inference & robustness & monitoring & fairness \\
+\midrule
+Multimodal affect models \citep{tzirakis2017,tsai2019,wagner2023} & \checkmark & -- & $\circ$ & -- & $\circ$ \\
+Applied affect analytics \citep{stappen2022,antonov2024,cui2025} & \checkmark & -- & -- & -- & -- \\
+Video analytics systems \citep{kang2017,jiang2018} & -- & \checkmark & $\circ$ & -- & -- \\
+Early-exit and cascades \citep{viola2001,teerapittayanon2016} & -- & \checkmark & -- & -- & -- \\
+Drift and shift detection \citep{bifet2007,rabanser2019} & -- & -- & \checkmark & \checkmark & -- \\
+Fairness in FER \citep{xu2020} & $\circ$ & -- & -- & -- & \checkmark \\
+\textbf{This study} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\botrule
+\end{tabular}
+\end{table}

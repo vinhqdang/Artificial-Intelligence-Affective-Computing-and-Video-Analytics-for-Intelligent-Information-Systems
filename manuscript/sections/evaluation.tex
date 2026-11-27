@@ -1,0 +1,34 @@
+\section{Evaluation Design}\label{sec:evaluation}
+
+\subsection{Data}
+
+We use the audio-visual speech portion of the Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS; \citealp{livingstone2018}). Twenty-four professional actors (12 female, 12 male) speak two lexically matched, neutral statements in eight emotions: neutral, calm, happy, sad, angry, fearful, disgust and surprised. All emotions except neutral are produced at two intensities. This gives 1440 clips (60 per actor), 96 of them neutral and 192 for each other class. Clips last 3.69\,s on average (SD 0.34\,s) and are recorded at 1280$\times$720 pixels and 29.97 frames per second. The statements carry no emotional content, so the linguistic channel is uninformative by design and the study isolates the paralinguistic and facial channels. RAVDESS is acted, frontal and recorded under studio conditions. This is a limitation for external validity, but it is an advantage for a controlled study of degradations, because the clean condition is truly clean and every degradation can be injected and measured.
+
+\subsection{Feature extraction}
+
+Audio is decoded to 16\,kHz mono. Video is sampled at about 5 frames per second (every sixth frame; 18.9 frames per clip on average). A YuNet face detector \citep{wu2023yunet} locates the largest face in each frame (resized to 640$\times$360). The face box is enlarged by 15\% and cropped from the full-resolution frame. A face was found in every sampled frame in all conditions. The four extractors are:
+\begin{itemize}
+\item \textbf{A0 prosody} (cheap): 280 descriptors computed with librosa \citep{mcfee2015}. These are means and standard deviations of 40 MFCCs with their first and second derivatives, energy, zero-crossing rate, spectral centroid, bandwidth, roll-off and contrast, chroma means, and fundamental-frequency statistics.
+\item \textbf{A1 wav2vec~2.0} (expensive): the self-supervised \texttt{wav2vec2-base} model \citep{baevski2020}, pre-trained on unlabelled read English speech with no emotion supervision. Hidden states of all 13 layers are averaged over time and then over layers (768-d).
+\item \textbf{V0 MobileNetV3} (cheap): the ImageNet-trained \texttt{mobilenet\_v3\_small} \citep{howard2019}. The 576-d pooled embedding of each face crop is summarised by its mean and standard deviation over frames (1152-d).
+\item \textbf{V1 CLIP} (expensive): the image encoder of CLIP ViT-B/32 \citep{radford2021}. L2-normalised 512-d frame embeddings are summarised by their mean and standard deviation (1024-d). We also use CLIP zero-shot (V1-ZS). Each class is represented by the averaged text embedding of three prompts (e.g.\ ``a photo of a \{angry\} face.''), and frame-level similarities are averaged over the clip.
+\end{itemize}
+None of the pre-trained models was trained on emotion labels, which rules out leakage of RAVDESS labels through pre-training.
+
+\subsection{Stream degradations}
+
+Models are always trained on clean data. Test data are presented clean or under one of eight degradations that mimic common streaming impairments \citep{hendrycks2019}. On audio we add white Gaussian noise at a signal-to-noise ratio of 20, 10 or 0\,dB (\emph{snr20}, \emph{snr10}, \emph{snr0}). On video we apply three impairments to the full frame before face detection. \emph{compress} downscales to 320$\times$180, encodes with JPEG quality 8 and upscales again, emulating a low-bit-rate stream. \emph{lowlight} applies a gamma of 2.2, scales brightness by 0.35 and adds sensor noise ($\sigma=6$). \emph{blur} applies a Gaussian blur ($21\times21$ kernel, $\sigma=6$). Two combined conditions impair both channels: \emph{snr10+compress} and \emph{snr0+lowlight}. Noise is seeded by clip identifier, so every condition is exactly reproducible.
+
+\subsection{Protocol, models and statistics}
+
+Evaluation is strictly subject-independent (DR1). We use six outer folds, each holding out four actors (two female, two male). Every clip is predicted exactly once by a model that never saw its speaker. Within each training split, the regularisation strength $C\in\{0.01,0.1,1\}$ of each logistic regression \citep{pedregosa2011} is selected by a four-fold inner cross-validation grouped by actor. The same inner predictions are used to fit the temperatures, the cascade thresholds and the monitor thresholds. No test person is used for any fitting or selection.
+
+We report accuracy and macro-averaged F1 (macro-F1) pooled over the six test folds, with 95\% confidence intervals from a cluster bootstrap over actors (2000 resamples). Systems are compared on the 24 per-actor accuracies with the Wilcoxon signed-rank test \citep{wilcoxon1945,demsar2006}, and Holm's correction is applied within families of comparisons. Calibration is measured by the expected calibration error with 15 bins (ECE; \citealp{naeini2015}). Group parity is assessed by comparing accuracy and ECE between female and male actors.
+
+\subsection{Cost measurement}
+
+Each processing step was timed per clip on the clean condition: decoding, face detection, each extractor, and classification. Timings were taken on an Intel Xeon processor at 2.1\,GHz with two PyTorch threads per worker, without a GPU. Table~\ref{tab:cost} reports the means over 1380 clips (the 60 clips of one actor, processed during a pilot with a different thread setting, are excluded). We express cost in CPU seconds per clip and as a real-time factor, which is compute time divided by media duration.
+
+\subsection{Streaming simulation}
+
+To evaluate monitoring (DR4) we simulate streams for each outer fold. A stream presents the 240 test clips of the fold in random order under clean conditions and then the same clips, in a new random order, under one of the eight degradations. Each stream is repeated with 20 random seeds, giving 120 streams per condition. A recovery scenario presents 160 clean, 160 degraded and 160 clean clips. Control streams of 480 clean clips measure false alarms. We compare two label-free signals. The first is the stage-1 confidence, monitored with the Page--Hinkley test \citep{page1954} and ADWIN. The second is the per-channel input monitor score, monitored with ADWIN ($\delta=0.002$). We report the detection rate, the detection delay in clips after the change point, the false alarms per 1000 clean clips, and whether the first alarm comes from the degraded channel.

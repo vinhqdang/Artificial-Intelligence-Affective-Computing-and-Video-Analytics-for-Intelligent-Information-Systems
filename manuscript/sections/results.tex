@@ -1,0 +1,213 @@
+\section{Results}\label{sec:results}
+
+\subsection{Modalities, fusion and cost (RQ1)}
+
+Table~\ref{tab:cost} lists the measured cost of each processing step. Face detection and frame decoding (0.51\,s per clip) cost more than the cheap visual model itself. The CLIP image encoder is the most expensive component (0.88\,s), followed by wav2vec~2.0 (0.39\,s). Running all four extractors costs 2.01\,CPU-seconds per clip, a real-time factor of 0.54 on two threads. One CPU core pair can therefore analyse slightly less than two streams in real time.
+
+\begin{table}[t]
+\caption{Measured CPU cost per clip (seconds; mean over 1380 clips, two threads). RTF: real-time factor, compute time divided by clip duration.}\label{tab:cost}
+\centering\footnotesize
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Component or pipeline & Mean (SD) & Median & RTF \\
+\midrule
+Audio decoding & 0.090 (0.018) & 0.085 & 0.025 \\
+Video decoding and face detection & 0.512 (0.127) & 0.485 & 0.139 \\
+A0 prosody & 0.072 (0.081) & 0.068 & 0.020 \\
+A1 wav2vec 2.0 & 0.393 (0.070) & 0.377 & 0.107 \\
+V0 MobileNetV3 & 0.065 (0.030) & 0.057 & 0.018 \\
+V1 CLIP ViT-B/32 & 0.877 (0.177) & 0.842 & 0.237 \\
+\midrule
+A1 alone (incl.\ decoding) & 0.483 (0.074) & 0.466 & 0.131 \\
+Cheap stage A0+V0 (incl.\ decoding) & 0.738 (0.164) & 0.714 & 0.201 \\
+All four models (F-all) & 2.008 (0.320) & 1.964 & 0.545 \\
+\botrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:main} reports subject-independent recognition. Chance level is 12.5\% for eight balanced classes (13.3\% for the majority class). The self-supervised speech model is the strongest single modality (72.1\% accuracy), well ahead of CLIP image features (59.9\%) and of the cheap prosody and MobileNet features (both about 48\%). Within wav2vec~2.0 the most informative single layer was layer 3 (71.2\%). Averaging all layers was slightly better (72.1\%) and avoids a layer search. Zero-shot CLIP reached only 20.0\%. It barely exceeds chance. It labelled 61\% of all clips as neutral, including 178 of the 192 happy clips, and most of the rest as angry. A general-purpose vision--language model therefore does not recognise acted facial affect from text prompts alone, although its image features carry the information once a light classifier is trained on them.
+
+Fusion is where the gains are. Late fusion of the two expensive models (F-full) reaches 82.5\% and fusion of all four (F-all) 82.6\%. This is 10.5 percentage points above the best single modality (Wilcoxon over 24 actors, $p=0.0001$). Adding the cheap models to F-full brings no further gain ($p=0.73$). Early fusion by concatenating A1 and V1 features is worse than late fusion (79.1\%), in line with observations that jointly fitted multimodal classifiers can underuse the weaker modality \citep{wang2020}. A confidence-weighted variant of late fusion (CWF) did not improve on the plain product rule on clean data (81.9\%). Figure~\ref{fig:confusion} in the appendix shows the confusion matrix of F-all. Sad is the hardest class (recall 0.68) and is mostly confused with neutral, calm and fearful. Angry is the easiest (0.90).
+
+\begin{table}[t]
+\caption{Subject-independent recognition on RAVDESS (1440 clips, 24 actors, six folds). 95\% CIs from a cluster bootstrap over actors. Cost: mean CPU seconds per clip.}\label{tab:main}
+\centering\footnotesize
+\begin{tabular}{@{}lccr@{}}
+\toprule
+System & Accuracy [95\% CI] & Macro-F1 [95\% CI] & Cost \\
+\midrule
+A0 prosody & 0.477 [0.436, 0.519] & 0.465 [0.423, 0.505] & 0.16 \\
+A1 wav2vec 2.0 & 0.721 [0.678, 0.758] & 0.715 [0.676, 0.752] & 0.48 \\
+V0 MobileNetV3 & 0.476 [0.412, 0.540] & 0.473 [0.410, 0.536] & 0.58 \\
+V1 CLIP & 0.599 [0.560, 0.642] & 0.592 [0.552, 0.636] & 1.39 \\
+V1-ZS CLIP zero-shot & 0.200 [0.171, 0.229] & 0.161 [0.126, 0.193] & 1.39 \\
+\midrule
+F-cheap: LF(A0, V0) & 0.626 [0.569, 0.687] & 0.618 [0.561, 0.679] & 0.74 \\
+EF-full: concat(A1, V1) & 0.791 [0.749, 0.832] & 0.786 [0.744, 0.826] & 1.87 \\
+F-full: LF(A1, V1) & 0.825 [0.785, 0.861] & 0.821 [0.779, 0.858] & 1.87 \\
+F-all: LF(A0, A1, V0, V1) & \textbf{0.826} [0.778, 0.870] & \textbf{0.822} [0.773, 0.867] & 2.01 \\
+\midrule
+Cascade, stage 1 = A0+V0 & 0.815 [0.762, 0.862] & 0.811 [0.760, 0.859] & 1.65 \\
+Cascade, stage 1 = A1 & 0.800 [0.752, 0.843] & 0.796 & 1.05 \\
+\botrule
+\end{tabular}
+\end{table}
+
+\subsection{Cost-aware cascades (RQ2)}
+
+Figure~\ref{fig:cascades} plots accuracy against mean cost for cascades with different first stages, sweeping the escalation rate from 0 to 100\%. Every cascade dominates random escalation at the same rate. For example, the A0+V0 cascade at 40\% escalation reaches 76.3\% compared with 70.7\% for random escalation. Stage-1 confidence is therefore informative on clean data. The choice of first stage matters more than the threshold. Our initial design (Cycle~1) used the two cheapest models, A0+V0, as stage 1. It is dominated across almost the whole cost range by the cascade that starts with the speech transformer A1, because A1 alone is both cheaper (0.48\,s) and much more accurate (72.1\% vs 62.6\%) than A0+V0. The visual pipeline is expensive in our setting because face detection and decoding cost 0.51\,s before any visual model runs.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{figures/cascade_orders.pdf}
+\caption{Accuracy against mean CPU cost per clip for confidence-gated cascades with different first stages $S$, each escalating to F-all. Curves sweep the escalation rate. Stars mark the operating points chosen on training data only.}\label{fig:cascades}
+\end{figure}
+
+Table~\ref{tab:orders} gives the operating points fixed on training data. All cascades lose between 1.1 and 2.6 points of accuracy relative to F-all on the test people, more than the one-point tolerance targeted on training data. This is a reminder that thresholds tuned on one population transfer imperfectly to new people. The A1-first cascade escalates 37\% of clips and saves 47.9\% of compute at a loss of 2.6 points (80.0\% vs 82.6\%; Holm-adjusted $p=0.038$). The A0+A1 cascade saves 34.7\% at a loss of 1.4 points that is not significant after correction. The Cycle~1 design (A0+V0) saves only 18.0\%. On the test sweep, the A1-first cascade reaches 82\% accuracy at 1.43\,s per clip, 29\% cheaper than F-all. This value is chosen on the test data and is therefore optimistic.
+
+\begin{table}[t]
+\caption{Cascade operating points fixed on training data and applied to held-out actors. Saving relative to F-all (2.008\,s per clip, accuracy 0.826). $p$: Wilcoxon test of per-actor accuracy against F-all, Holm-adjusted over the eight first stages.}\label{tab:orders}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Stage 1 & Stage-1 cost & Escalation & Mean cost & Saving & Accuracy & $p_\text{Holm}$ \\
+\midrule
+A0 & 0.162 & 0.869 & 1.767 & 12.0\% & 0.814 & 0.061 \\
+V0 & 0.576 & 0.866 & 1.816 & 9.6\% & 0.804 & 0.270 \\
+A0+V0 (Cycle 1) & 0.738 & 0.715 & 1.645 & 18.0\% & 0.815 & 0.061 \\
+A1 & 0.483 & 0.369 & 1.045 & 47.9\% & 0.800 & 0.038 \\
+A0+A1 & 0.555 & 0.521 & 1.312 & 34.7\% & 0.812 & 0.105 \\
+A1+V0 & 1.059 & 0.237 & 1.284 & 36.1\% & 0.808 & 0.041 \\
+A0+A1+V0 & 1.131 & 0.309 & 1.402 & 30.2\% & 0.810 & 0.105 \\
+V1 & 1.388 & 0.764 & 1.861 & 7.3\% & 0.808 & 0.105 \\
+\botrule
+\end{tabular}
+\end{table}
+
+\subsection{Stream degradations and the silent-failure problem (RQ3)}
+
+Table~\ref{tab:robust} shows what happens when the stream degrades. Audio noise is severe. Accuracy of wav2vec~2.0 drops from 72.1\% to 50.3\% at 20\,dB and to 16.9\% at 0\,dB, close to chance. Visual impairments roughly halve CLIP accuracy (compress 34.3\%, blur 32.5\%, low light 46.2\%). Because late fusion combines evidence, a degraded channel pulls the fused decision down even when the other channel is intact. At 0\,dB, F-all (17.8\%) is far worse than the clean visual models alone (59.9\% for CLIP).
+
+\begin{table}[t]
+\caption{Accuracy under stream degradations (models trained on clean data). Conf.: mean stage-1 confidence of the A0+V0 stage. Esc.: escalation rate of the Cycle~1 cascade at its fixed threshold.}\label{tab:robust}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Condition & A1 & V1 & F-cheap & Conf. & F-all & Cascade & Esc. \\
+\midrule
+clean & 0.721 & 0.599 & 0.626 & 0.635 & 0.826 & 0.815 & 0.715 \\
+snr20 & 0.503 & 0.599 & 0.351 & 0.714 & 0.622 & 0.560 & 0.578 \\
+snr10 & 0.325 & 0.599 & 0.245 & 0.816 & 0.370 & 0.306 & 0.367 \\
+snr0 & 0.169 & 0.599 & 0.180 & 0.907 & 0.178 & 0.178 & 0.171 \\
+compress & 0.721 & 0.343 & -- & -- & 0.702 & 0.674 & 0.726 \\
+lowlight & 0.721 & 0.462 & -- & -- & 0.684 & 0.651 & 0.673 \\
+blur & 0.721 & 0.325 & -- & -- & 0.734 & 0.711 & 0.749 \\
+snr10+compress & 0.325 & 0.343 & -- & -- & 0.360 & 0.333 & 0.564 \\
+snr0+lowlight & 0.169 & 0.462 & -- & -- & 0.166 & 0.162 & 0.284 \\
+\botrule
+\end{tabular}
+\end{table}
+
+The central finding of Cycle~1 is in the confidence column. As audio noise increases, the accuracy of the cheap stage falls from 62.6\% to 18.0\%, but its mean confidence \emph{rises} from 0.64 to 0.91. Noisy inputs are pushed to a region of feature space that the classifiers map confidently to a few classes. The cascade reads high confidence as ``easy'' and escalates less: 72\% of clips on clean data, 37\% at 10\,dB and 17\% at 0\,dB. It therefore saves the most compute exactly when its answers are worst. Figure~\ref{fig:silent} shows one such stream. Confidence-weighted fusion fails for the same reason and is significantly worse than plain late fusion under every noise condition (e.g.\ 31.9\% vs 37.0\% at 10\,dB; Holm-adjusted $p=0.0005$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/drift_stream.pdf}
+\caption{A silent failure. Rolling mean of stage-1 confidence on a stream of 240 clean clips followed by 240 clips with 0\,dB audio noise (fold 1, seed 0). Accuracy collapses after the change point while confidence rises. A one-sided Page--Hinkley test that watches for falling confidence stays silent. A two-sided ADWIN detector fires only after the confidence jump has persisted for several dozen clips.}\label{fig:silent}
+\end{figure}
+
+This failure carries over to label-free drift monitoring (Table~\ref{tab:drift}). A Page--Hinkley test that looks for falling confidence, the usual alarm for a model in trouble, did not detect any of the noise conditions. It detected only 35\% of the compressed and 72\% of the blurred streams. A two-sided ADWIN detector on confidence noticed the jump at 0\,dB but detected only 17\% of the 20\,dB streams and none of the visual degradations. In those conditions the cheap stage's confidence changes too little to separate from normal variation. Confidence also gives no hint of which channel is at fault.
+
+The per-channel input monitors behave very differently. Figure~\ref{fig:monitors} shows their scores. The distribution of each monitor's score moves upwards under every impairment of its own channel, while clean clips of new people stay below the threshold. With ADWIN on the standardised monitor scores, every degradation was detected in all 120 streams. The median delay was 15 clips (about 55\,s of speech), and the first alarm came from the degraded channel in every stream (Table~\ref{tab:drift}). On 57{,}600 clips of clean control streams the monitors raised no false alarm. River's ADWIN implementation tests for change every 32 observations. Together with the change point at clip 240, this quantises the delays to 15 or 47 clips. Faster detection is possible by checking more often, at the price of more tests. A Page--Hinkley test on the same scores was much more sensitive to its threshold. At its default setting it produced 17--21 false alarms per 1000 clean clips, and at a threshold that brought false alarms down to ADWIN's level it was slower.
+
+\begin{table}[t]
+\setlength{\tabcolsep}{4pt}
+\caption{Label-free drift detection, 120 streams per condition (240 clean clips, then 240 degraded). Det.: share of streams with an alarm after the change. Delay: median clips after the change (IQR). Attr.: share of streams whose first alarm comes from the degraded channel. False alarms per 1000 clips of clean control streams: confidence-PH 0.47, confidence-ADWIN 0, input-monitor ADWIN 0.}\label{tab:drift}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & \multicolumn{1}{c}{Confidence, PH} & \multicolumn{2}{c}{Confidence, ADWIN} & \multicolumn{3}{c}{Input monitors, ADWIN} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(l){5-7}
+Condition & Det. & Det. & Delay & Det. & Delay & Attr. \\
+\midrule
+snr20 & 0.00 & 0.17 & 175 (175--207) & 1.00 & 15 (15--47) & 1.00 \\
+snr10 & 0.00 & 0.70 & 111 (79--143) & 1.00 & 15 (15--15) & 1.00 \\
+snr0 & 0.00 & 1.00 & 79 (79--79) & 1.00 & 15 (15--15) & 1.00 \\
+compress & 0.35 & 0.00 & -- & 1.00 & 15 (15--15) & 1.00 \\
+lowlight & 0.00 & 0.00 & -- & 1.00 & 15 (15--15) & 1.00 \\
+blur & 0.72 & 0.00 & -- & 1.00 & 47 (15--47) & 1.00 \\
+snr10+compress & 0.02 & 0.02 & 239 & 1.00 & 15 (15--15) & 1.00 \\
+snr0+lowlight & 0.00 & 0.88 & 79 (79--111) & 1.00 & 15 (15--15) & 1.00 \\
+\botrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/monitor_scores.pdf}
+\caption{Scores of the label-free input monitors on held-out actors (log of normalised Mahalanobis distance; 0 is the per-clip threshold). Percentages give the share of clips above the threshold. Each monitor's score shifts under every impairment of its channel. Under moderate degradation most clips stay below the per-clip threshold, but the shift in the mean is easy to detect at stream level.}\label{fig:monitors}
+\end{figure}
+
+\subsection{From monitoring to action: gating (RQ4)}
+
+Cycle~2 used the monitors clip by clip. A clip whose channel score exceeded the threshold was fused without that channel. Figure~\ref{fig:monitors} explains why this was only partly successful. At 0\,dB, 67\% of clips are flagged and clip-level gating raised F-all accuracy from 17.8\% to 46.5\% (24 of 24 actors improved; Holm-adjusted $p=0.0002$). At 10\,dB only 10\% of clips are flagged and the gain was small and not significant (37.0\% to 40.1\%). In the combined snr10+compress condition the visual monitor flagged 59\% of clips while the audio monitor flagged only 10\%. The policy then removed the still-informative visual channel and kept the noisy audio, and accuracy fell from 36.0\% to 27.1\% (Holm-adjusted $p=0.003$). The gains also depended on the threshold. At the 99.9th percentile the audio monitor flagged only 1\% of 0\,dB clips and the benefit disappeared. Clip-level gating is therefore fragile, because a per-clip test has to separate distributions that overlap heavily.
+
+Cycle~3 acts on the stream-level detector instead (Algorithm~\ref{alg:slg}). Table~\ref{tab:gating} compares the gating policies on the degraded segment of the simulated streams. The oracle drops the truly degraded channel immediately. Stream-level gating raised accuracy under 10\,dB noise from 37.0\% to 60.4\% and under 0\,dB noise from 17.8\% to 59.3\%, close to the oracle's 62.2\%. Both gains were significant across actors (Holm-adjusted $p<10^{-4}$). The remaining gap to the oracle is the detection delay, during which clips are still fused with the noisy channel. For the visual impairments, stream-level gating was within $\pm2.3$ points of plain fusion, and no difference was significant. When video is compressed, dark or blurred but the voice is clean, there is little to gain from dropping the visual channel, and for blur the degraded video still adds information (oracle 70.9\% vs plain fusion 73.4\%). In both combined conditions both channels were flagged at almost the same time. With no healthy channel left, the policy fell back to full fusion. It did no harm, but the gain was at most marginal (+0.8 points at snr0+lowlight). Here the right response is an alert to a human operator, not an automatic fix. On clean control streams the policy never gated a channel. Its accuracy was identical to plain fusion, and its overhead was the monitor computation (about 0.6\,ms per clip). Because the expensive model of a degraded channel is skipped, gating also reduced cost, to 1.60--1.83\,s per clip under single-channel degradations.
+
+\begin{table}[t]
+\caption{Accuracy on the degraded part of the simulated streams (240 clean clips followed by 240 degraded; 6 folds $\times$ 20 seeds). LF: plain fusion of all models. Clip: clip-level gating (Cycle~2). Stream: stream-level gating (Cycle~3). Oracle: the truly degraded channel is dropped at the change point. Cost: mean CPU seconds per clip for stream-level gating. $p$: Wilcoxon, stream-level gating vs LF over 24 actors, Holm-adjusted.}\label{tab:gating}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Condition & LF & Clip & Stream & Oracle & Cost & $p_\text{Holm}$ \\
+\midrule
+snr20 & 0.622 & 0.617 & 0.621 & 0.622 & 1.83 & 1.000 \\
+snr10 & 0.370 & 0.401 & \textbf{0.604} & 0.622 & 1.83 & $<$0.001 \\
+snr0 & 0.178 & 0.465 & \textbf{0.593} & 0.622 & 1.82 & $<$0.001 \\
+compress & 0.702 & 0.716 & 0.709 & 0.709 & 1.60 & 1.000 \\
+lowlight & 0.684 & 0.699 & 0.706 & 0.709 & 1.61 & 1.000 \\
+blur & 0.734 & 0.729 & 0.715 & 0.709 & 1.63 & 1.000 \\
+snr10+compress & 0.360 & 0.271 & 0.360 & 0.360 & 2.01 & 1.000 \\
+snr0+lowlight & 0.166 & 0.249 & 0.174 & 0.166 & 2.00 & 0.013 \\
+\botrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:slg} shows the policy on streams that degrade and then recover. In the recovery scenario every degradation was detected in all streams. The degraded channel was re-enabled after the stream returned to clean in 96--100\% of streams, with a median delay of 32 clips. The price is paid on that clean tail. Until the channel is re-enabled the system runs without it, and accuracy on the final clean segment was 78--80\% instead of 82--83\%. Recovery delay is therefore a parameter that operators should tune for their application. Asymmetric settings that re-enable a channel faster than they disable it are an obvious option.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/slg_stream.pdf}
+\caption{Stream-level gating on streams that degrade and recover (160 clean, 160 degraded, 160 clean clips; fold 1, seed 0). Upper panels: standardised input-monitor scores per channel (rolling mean) with the true degraded interval shaded and the gating decisions marked. Lower panels: rolling accuracy of plain fusion and stream-level gating. Left: 10\,dB audio noise. Right: video compression.}\label{fig:slg}
+\end{figure}
+
+\subsection{Calibration, group parity and explanation (RQ4)}
+
+Product-rule fusion is over-confident. On clean data, F-all had a mean confidence of 0.89 against an accuracy of 0.83 (ECE 0.068). The over-confidence was concentrated in male actors (ECE 0.127 vs 0.028 for female actors). A single temperature fitted on training data reduced the ECE to 0.023 and closed the calibration gap between the groups (0.047 vs 0.054). Accuracy is unchanged because a temperature does not change the ranking of classes.
+
+Accuracy itself differed by group (Table~\ref{tab:fair}). Every system was more accurate for female than for male actors. For F-all the gap was 13.8 points (89.4\% vs 75.7\%), and the 95\% bootstrap interval of the gap, 6.3 to 21.4 points, excludes zero. The gap is larger after fusion than for the best single modality (6.4 points for wav2vec~2.0, interval including zero). Fusion therefore amplified a difference that each modality showed in a milder form. With 12 actors per group, and actors who differ in expressive style as well as in sex, we cannot attribute the gap to sex as such. The result shows why accuracy should be audited per group before deployment and not inferred from aggregate performance.
+
+\begin{table}[t]
+\setlength{\tabcolsep}{4pt}
+\caption{Accuracy and calibration by actor sex on clean data. Gap: female minus male accuracy, with 95\% cluster-bootstrap CI. ECE before and after temperature recalibration of the fused output.}\label{tab:fair}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+System & Acc.\ female & Acc.\ male & Gap [95\% CI] & ECE f/m (raw) & ECE f/m (recal.) \\
+\midrule
+A1 wav2vec 2.0 & 0.753 & 0.689 & 0.064 [$-$0.007, 0.144] & 0.043 / 0.055 & -- \\
+V1 CLIP & 0.651 & 0.546 & 0.106 [0.031, 0.181] & 0.051 / 0.045 & -- \\
+F-cheap & 0.678 & 0.575 & 0.103 [$-$0.011, 0.214] & 0.052 / 0.060 & 0.075 / 0.047 \\
+F-all & 0.894 & 0.757 & 0.138 [0.063, 0.214] & 0.028 / 0.127 & 0.054 / 0.047 \\
+Cascade (A0+V0) & 0.881 & 0.749 & 0.132 [0.050, 0.221] & 0.038 / 0.116 & -- \\
+\botrule
+\end{tabular}
+\end{table}
+
+Late fusion makes each decision decomposable into modality contributions (DR5). For each clip we computed the share of the evidence for the predicted class that came from the audio models (A0, A1) and from the visual models (V0, V1). Figure~\ref{fig:attr} shows the mean shares by true emotion. Audio contributed most of the evidence overall (50--66\%). Its share was highest for surprised (66\%), fearful (64\%) and calm (61\%) and lowest for happy, where face and voice contributed equally. This agrees with the common finding that happiness is the most visually distinctive emotion. Among the prosodic descriptors, the largest standardised coefficients belonged to the mean and variability of the first cepstral coefficient, which tracks overall energy, and to energy (RMS) statistics. These are interpretable loudness and arousal cues. Explanations of this kind are coarse, but they can be produced for every decision at no extra cost. They also tell an operator which channel a decision relied on. This matters when that channel is the one a monitor has just flagged.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/attribution.pdf}
+\caption{Modality attribution for F-all: mean share of the evidence for the predicted class that comes from the audio models (A0+A1) and from the visual models (V0+V1), by true emotion.}\label{fig:attr}
+\end{figure}
