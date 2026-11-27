@@ -68,7 +68,7 @@ For an active set $S\subseteq\mathcal{M}$, late fusion multiplies the calibrated
 \begin{equation}\label{eq:lf}
 p_S(k\mid x) \propto \exp\!\Big(\tfrac{1}{T_S}\sum_{m\in S}\log p_m(k\mid x)\Big).
 \end{equation}
-Late fusion was chosen deliberately. Any subset of modalities can be fused without retraining, which is what modality gating requires, and each modality's contribution to a decision can be read off additively (DR5). The second temperature corrects the over-confidence that the product rule produces when modalities are treated as independent.
+Late fusion was chosen deliberately, for two reasons. Any subset of modalities can be fused without retraining, which is what modality gating requires, and each modality's contribution to a decision can be read off additively (DR5). The second temperature corrects the over-confidence that the product rule produces when modalities are treated as independent. This recalibration was added in Cycle~2. In Cycle~1, and in the Cycle~1 results reported in Section~\ref{sec:results}, $T_S=1$. We fit $T_S$ for the cheap stage and for the full set of four models in each training fold, and the full-set temperature is reused for subsets of active models. A temperature does not change which class has the highest score, so it affects confidence and calibration but never accuracy.
 
 \subsection{Confidence-gated cascade}
 
@@ -95,7 +95,7 @@ Cycle~2 used \emph{clip-level gating}. If $q_h>1$ for a clip, the models of chan
 \begin{algorithm}[t]
 \caption{Stream-level gating (Cycle 3)}\label{alg:slg}
 \begin{algorithmic}[1]
-\Require clip stream $x_1,x_2,\dots$; monitors $(d_h,\theta_h,\mu_h,\sigma_h)$ and ADWIN detectors $D_h$ for $h\in\{\mathrm{a},\mathrm{v}\}$; threshold $\tau$; margin $\delta=1$
+\Require clip stream $x_1,x_2,\dots$; monitors $(d_h,\theta_h,\mu_h,\sigma_h)$ and ADWIN detectors $D_h$ for $h\in\{\mathrm{a},\mathrm{v}\}$; threshold $\tau$; margin margin $\kappa=1$
 \State $\mathit{state}_h\gets\textsc{healthy}$ for both channels
 \For{$t=1,2,\dots$}
   \State compute cheap features A0, V0 of $x_t$; $s_h\gets(\log(d_h(x_t)/\theta_h)-\mu_h)/\sigma_h$
@@ -105,7 +105,7 @@ Cycle~2 used \emph{clip-level gating}. If $q_h>1$ for a clip, the models of chan
     \State $D_h.\textsc{update}(s_h)$
     \If{$D_h$ signals a change}
        \State $\bar{s}\gets$ mean of the last 15 values of $s_h$
-       \State $\mathit{state}_h\gets\textsc{degraded}$ if $\bar{s}>\delta$ else $\textsc{healthy}$ \Comment{applies from $t+1$}
+       \State $\mathit{state}_h\gets\textsc{degraded}$ if $\bar{s}>\kappa$ else $\textsc{healthy}$ \Comment{applies from $t+1$}
     \EndIf
   \EndFor
 \EndFor
