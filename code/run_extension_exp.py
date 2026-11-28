@@ -15,9 +15,17 @@ X4  stream-level gating with the best monitor (chosen on RAVDESS, applied to bot
 Helpers are imported from run_experiments (R), run_qag (Q), run_slg (S), run_revision (RV),
 run_envelope (RE) and run_integrated (I); none of these files is modified.
 
+MOSEI (--corpus mosei, or --corpus all for all three corpora; protocol in code/SPEC_mosei.md) runs the
+same X1-X4 machinery with 4 classes (neutral, happy, sad, angry), 5 outer folds grouped by video
+(StratifiedGroupKFold, seed 2026), no sex-based fairness, no speaker monitor (SPK not applicable), fusion
+gain by a paired cluster bootstrap over videos, X2 in four directions on the 4 shared classes, and X4 with
+the QD monitor on S1 and S4. MOSEI outputs go to results/ext_mosei_* and manuscript/figures/ext_mosei*.pdf.
+
 Run from the repository root:
     python3 code/run_extension_exp.py --corpus ravdess --part all
     python3 code/run_extension_exp.py --corpus both --part all      # needs CREMA-D features
+    python3 code/run_extension_exp.py --corpus mosei --part all     # needs MOSEI features
+    python3 code/run_extension_exp.py --corpus all --part all
 """
 import argparse
 import json
@@ -34,7 +42,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import GroupKFold, StratifiedGroupKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
@@ -70,6 +78,13 @@ MODES = ("clean", "mct")
 MODELS = ["A0", "A1", "V0", "V1"]
 FUSED = {"F-all": MODELS, "F-cheap(A0,V0)": ["A0", "V0"], "LF(A0,A1)": ["A0", "A1"]}
 SHARED = [1, 3, 4, 5, 6, 7]        # RAVDESS codes of neutral, happy, sad, angry, fearful, disgust
+SHARED4 = [1, 3, 4, 5]             # neutral, happy, sad, angry (RAVDESS codes; used for MOSEI)
+MOSEI_MONS = ["CONTENT", "QD"]     # SPK not applicable on MOSEI (no speaker sessions)
+MOSEI_FOLDS = 5
+MOSEI_STREAM = 480                 # clips per S4 / S5 stream
+BASE_CORPORA = ("ravdess", "cremad")
+MOSEI_COND_ORDER = ["clean", "snr10", "snr0", "cafe5", "street5", "compress", "lowlight", "h264",
+                    "snr10+compress", "snr0+lowlight"]
 AUD_ALL = ["clean", "snr20", "snr10", "snr0", "cafe5", "street5"]
 VID_ALL = ["clean", "compress", "lowlight", "blur", "h264"]
 COMBOS = [("snr10", "compress"), ("snr0", "lowlight")]
@@ -84,6 +99,7 @@ PAL = R.PAL
 CFG = SimpleNamespace(
     feat_ravdess=Path("/home/user/data/features"),
     feat_cremad=Path("/home/user/data/features_cremad"),
+    feat_mosei=Path("/home/user/data/features_mosei"),
     cache=Path("/home/user/data/cache_ext"),
     res=R.RES, fig=R.FIG, seeds=R.N_DRIFT_SEEDS, n_jobs=2, t0=time.perf_counter(),
 )
@@ -151,7 +167,7 @@ def make_pack(name):
         pk.emotion = meta["emotion"].values.astype(int)
         pk.y8 = pk.emotion - 1
         pk.folds_full = R.fold_splits(pk.actor)
-    else:
+    elif name == "cremad":
         pk.feat = CFG.feat_cremad
         meta = pd.read_csv(pk.feat / "meta.csv")
         pk.actor = meta["actor"].values.astype(int)
@@ -159,7 +175,20 @@ def make_pack(name):
         pk.emotion = meta["emotion"].values.astype(int)
         pk.y8 = None
         pk.folds_full = cremad_folds(pk.actor, pk.male)
-    pk.y6 = np.array([SHARED.index(e) if e in SHARED else -1 for e in pk.emotion])
+    else:  # mosei: groups are videos; no sex, no speaker sessions
+        pk.feat = CFG.feat_mosei
+        meta = pd.read_csv(pk.feat / "meta.csv")
+        _, pk.actor = np.unique(meta["video_id"].astype(str).values, return_inverse=True)
+        pk.actor = pk.actor.astype(int)
+        pk.male = None
+        pk.emotion = meta["emotion"].values.astype(int)
+        pk.y8 = None
+        pk.folds_full = mosei_folds(pk.actor, pk.emotion)
+    pk.y4 = np.array([SHARED4.index(e) if e in SHARED4 else -1 for e in pk.emotion])
+    if name == "mosei":
+        pk.y6 = np.full(len(pk.emotion), -1)
+    else:
+        pk.y6 = np.array([SHARED.index(e) if e in SHARED else -1 for e in pk.emotion])
     pk.n = len(meta)
     pk.acond = discover(pk.feat, AUD_ALL, ("prosody", "w2v", "qda"))
     pk.vcond = discover(pk.feat, VID_ALL, ("mnet", "clip", "qdv"))
@@ -167,16 +196,37 @@ def make_pack(name):
     pk.reg = build_registry(pk.acond, pk.vcond)
     pk.cost = cost_for(pk)
     # speakers with fewer than 24 clips in a test fold are sampled with replacement in CREMA-D S4/S5
-    pk.under24 = [int(sum(1 for a in np.unique(pk.actor[te]) if np.sum(pk.actor[te] == a) < CREMA_PER_SESSION))
+    pk.under24 = None if name == "mosei" else [int(sum(1 for a in np.unique(pk.actor[te]) if np.sum(pk.actor[te] == a) < CREMA_PER_SESSION))
                   for _, te in pk.folds_full]
     return pk
 
 
 def make_tasks(pk):
-    """Main within-corpus task of a pack: RAVDESS 8-class, CREMA-D 6-class."""
+    """Main within-corpus task of a pack: RAVDESS 8-class, CREMA-D 6-class, MOSEI 4-class."""
+    if pk.name == "mosei":
+        return mosei_task(pk)
     if pk.name == "ravdess":
         return dict(name="ravdess8", pack=pk, y=pk.y8, K=8, valid=np.ones(pk.n, bool), folds=pk.folds_full)
     return dict(name="cremad6", pack=pk, y=pk.y6, K=6, valid=pk.y6 >= 0, folds=pk.folds_full)
+
+
+def mosei_folds(group, emotion, n_folds=MOSEI_FOLDS, seed=SEED):
+    """Outer folds grouped by video and stratified by class (StratifiedGroupKFold, seed 2026)."""
+    sgk = StratifiedGroupKFold(n_splits=n_folds, shuffle=True, random_state=seed)
+    X = np.zeros(len(emotion))
+    return [(np.sort(tr), np.sort(te)) for tr, te in sgk.split(X, emotion, group)]
+
+
+def shared4_task(pk):
+    """Four shared classes (neutral, happy, sad, angry) on RAVDESS or CREMA-D: same folds, shared clips only."""
+    valid = pk.y4 >= 0
+    folds = [(tr[valid[tr]], te[valid[te]]) for tr, te in pk.folds_full]
+    return dict(name=f"{pk.name}4", pack=pk, y=pk.y4, K=4, valid=valid, folds=folds)
+
+
+def mosei_task(pk):
+    """MOSEI main task: 4 classes, all clips, the five video-grouped folds."""
+    return dict(name="mosei4", pack=pk, y=pk.y4, K=4, valid=np.ones(pk.n, bool), folds=pk.folds_full)
 
 
 def ravdess6_task(pk):
@@ -290,7 +340,7 @@ def fit_within(task, modes=MODES):
     return res
 
 
-def fit_cross(src, tgt, modes=MODES):
+def fit_cross(src, tgt, modes=MODES, tag="x"):
     """Train on all valid source clips, test on all valid target clips (one fold)."""
     sp_pk, tg_pk = src["pack"], tgt["pack"]
     tr = np.flatnonzero(src["valid"])
@@ -300,7 +350,7 @@ def fit_cross(src, tgt, modes=MODES):
         specs = []
         for tier in MODELS:
             C = res[("clean", tier, 0)]["C"] if mode == "mct" else None
-            specs.append(dict(id=(mode, tier, 0), key=f"x_{sp_pk.name}2{tg_pk.name}_{tier}_{mode}",
+            specs.append(dict(id=(mode, tier, 0), key=f"{tag}_{sp_pk.name}2{tg_pk.name}_{tier}_{mode}",
                               cache=str(CFG.cache), ftr=str(sp_pk.feat), fte=str(tg_pk.feat), tr=tr, te=te,
                               y=src["y"][tr], g=sp_pk.actor[tr], K=src["K"], tier=tier, mode=mode, C=C,
                               te_mcs=tier_mcs(tg_pk, tier)))
@@ -389,6 +439,34 @@ def save_rows(df, name, keys):
 # ----------------------------------------------------------------------------
 # X1 within-corpus
 # ----------------------------------------------------------------------------
+def fusion_boot_rows(pk, P, y, eval_idx, reg):
+    """MOSEI fusion gain: F-all minus the best single tier (same training mode and condition), point estimate
+    on the pooled test set; paired cluster bootstrap over videos (R.N_BOOT resamples), percentile 95% CI."""
+    rows = []
+    yy = y[eval_idx]
+    uv, inv = np.unique(pk.actor[eval_idx], return_inverse=True)
+    nv = np.bincount(inv, minlength=len(uv)).astype(float)
+    for mode in MODES:
+        for c in reg:
+            accs = {t: float(np.mean(P[mode][t][c][eval_idx].argmax(1) == yy)) for t in MODELS}
+            best = max(MODELS, key=lambda t: accs[t])
+            cF = (P[mode]["F-all"][c][eval_idx].argmax(1) == yy).astype(float)
+            cS = (P[mode][best][c][eval_idx].argmax(1) == yy).astype(float)
+            sF = np.bincount(inv, weights=cF, minlength=len(uv))
+            sS = np.bincount(inv, weights=cS, minlength=len(uv))
+            rng = np.random.default_rng(seed_of(f"fus|{pk.name}|{mode}|{c}"))
+            draws = rng.integers(0, len(uv), size=(R.N_BOOT, len(uv)))
+            gains = (sF[draws].sum(1) - sS[draws].sum(1)) / nv[draws].sum(1)
+            lo, hi = np.percentile(gains, [2.5, 97.5])
+            point = (sF.sum() - sS.sum()) / nv.sum()
+            rows.append(dict(corpus=pk.name, training=mode, condition=c, F_all_accuracy=float(cF.mean()),
+                             best_single=best, best_single_accuracy=accs[best],
+                             mean_gain_pp=float(100 * point), gain_ci_low_pp=float(100 * lo),
+                             gain_ci_high_pp=float(100 * hi), n_videos=int(len(uv)), n_boot=int(R.N_BOOT),
+                             method="paired cluster bootstrap over videos"))
+    return pd.DataFrame(rows)
+
+
 def run_x1(task, res=None):
     pk, reg, K, N = task["pack"], task["pack"].reg, task["K"], task["pack"].n
     if res is None:
@@ -409,8 +487,9 @@ def run_x1(task, res=None):
     x1 = pd.DataFrame(rows)
 
     # fusion gain: F-all against the best single tier of the same training mode, Wilcoxon over actors
+    # (MOSEI: paired cluster bootstrap over videos, see fusion_boot_rows)
     frows = []
-    for mode in MODES:
+    for mode in (MODES if pk.name != "mosei" else []):
         pvals = []
         for c in reg:
             accs = {t: float(np.mean(P[mode][t][c][eval_idx].argmax(1) == y[eval_idx])) for t in MODELS}
@@ -426,7 +505,7 @@ def run_x1(task, res=None):
                               mean_gain_pp=float(100 * np.mean(fa - fb)), wilcoxon_stat=stat, p_value=p))
         for r, a in zip([r for r in frows if r["training"] == mode], R.holm(pvals)):
             r["p_holm"] = float(a)
-    fus = pd.DataFrame(frows)
+    fus = pd.DataFrame(frows) if pk.name != "mosei" else fusion_boot_rows(pk, P, y, eval_idx, reg)
 
     # A1-first cascade, clean-trained: operating point from training OOF (within OP_TOL of F-all)
     casc = {c: np.full(N, -1) for c in reg}
@@ -464,9 +543,10 @@ def run_x1(task, res=None):
     casc_df = pd.DataFrame(crow)
 
     # sex gap of F-all (female minus male) with actor-cluster bootstrap
-    male_of = {int(a): bool(pk.male[pk.actor == a][0]) for a in np.unique(pk.actor)}
+    male_of = ({int(a): bool(pk.male[pk.actor == a][0]) for a in np.unique(pk.actor)}
+               if pk.male is not None else {})
     grow = []
-    for mode in MODES:
+    for mode in (MODES if pk.male is not None else []):
         for c in reg:
             cma, ids = cmas[(mode, "F-all", c)]
             gap, lo, hi, am, af = sex_gap(cma, ids, male_of, seed_of(f"gap|{pk.name}|{mode}|{c}"))
@@ -493,7 +573,7 @@ def run_x1(task, res=None):
 # ----------------------------------------------------------------------------
 # X2 cross-corpus
 # ----------------------------------------------------------------------------
-def monitor_shift(src, tgt):
+def monitor_shift(src, tgt, label=None):
     """Input monitors fitted on the source corpus (leave one source fold out) and applied to the target
     clean clips; ADWIN on a stream of 240 held-out source clips followed by 240 target clips."""
     sp, tg = src, tgt
@@ -530,7 +610,7 @@ def monitor_shift(src, tgt):
                                      median_delay_clips=float(np.median(delays)) if delays else np.nan))
     pf = pd.DataFrame(per_fold)
     for (kind, ch), g in pf.groupby(["monitor", "channel"]):
-        rows.append(dict(direction=DIRECTIONS[sp.name], monitor=kind, channel=ch, n_folds=len(g),
+        rows.append(dict(direction=label or DIRECTIONS[sp.name], monitor=kind, channel=ch, n_folds=len(g),
                          target_clean_flag_rate_mean=g.target_clean_flag_rate.mean(),
                          target_clean_flag_rate_sd=g.target_clean_flag_rate.std(ddof=1),
                          source_heldout_flag_rate_mean=g.source_heldout_flag_rate.mean(),
@@ -576,6 +656,47 @@ def run_cross_block(ravdess_task, cremad_task):
     return pd.DataFrame(out_rows), cross_info
 
 
+def run_cross_mosei(packs):
+    """X2 on MOSEI: the four shared classes. Trains on RAVDESS or CREMA-D (clean and MCT) and tests on MOSEI,
+    and trains on MOSEI and tests on RAVDESS or CREMA-D. Within-corpus 4-class comparators for all three
+    corpora, and monitor shift (source-fitted CONTENT and QD) for the four directions."""
+    tasks = {"ravdess": shared4_task(packs["ravdess"]), "cremad": shared4_task(packs["cremad"]),
+             "mosei": mosei_task(packs["mosei"])}
+    out_rows, info, shifts = [], {}, []
+    for s_name, t_name in (("ravdess", "mosei"), ("cremad", "mosei"), ("mosei", "ravdess"), ("mosei", "cremad")):
+        src, tgt = tasks[s_name], tasks[t_name]
+        direction = f"{s_name}->{t_name}"
+        tg = tgt["pack"]
+        te = np.flatnonzero(tgt["valid"])
+        res = fit_cross(src, tgt, tag="x4")
+        P, _ = assemble(tg.reg, res, [te], tg.n, 4)
+        for mode in MODES:
+            for name in MODELS + ["F-all"]:
+                for c in tg.reg:
+                    row, _, _ = eval_metrics(P[mode][name][c], tgt["y"], te, tg.actor, 4,
+                                             seed_of(f"x4x|{direction}|{mode}|{name}|{c}"))
+                    out_rows.append(dict(direction=direction, setting=f"cross-{mode}", target=t_name,
+                                         model=name, condition=c, **row))
+        info[direction] = dict(T={f"{m}:{t}": float(res[(m, t, 0)]["T"]) for m in MODES for t in MODELS},
+                               C={f"{m}:{t}": float(res[(m, t, 0)]["C"]) for m in MODES for t in MODELS})
+        ms, _ = monitor_shift(src["pack"], tg, label=direction)
+        shifts.append(ms)
+    for name in ("ravdess", "cremad", "mosei"):
+        task = tasks[name]
+        tg = task["pack"]
+        res = fit_within(task)
+        P, _ = assemble(tg.reg, res, [te for _, te in task["folds"]], tg.n, 4)
+        ev = np.sort(np.concatenate([te for _, te in task["folds"]]))
+        for mode in MODES:
+            for name2 in MODELS + ["F-all"]:
+                for c in tg.reg:
+                    row, _, _ = eval_metrics(P[mode][name2][c], task["y"], ev, tg.actor, 4,
+                                             seed_of(f"x4w|{name}|{mode}|{name2}|{c}"))
+                    out_rows.append(dict(direction=f"within:{task['name']}", setting=f"within-{mode}",
+                                         target=name, model=name2, condition=c, **row))
+    return pd.DataFrame(out_rows), info, pd.concat(shifts, ignore_index=True)
+
+
 # ----------------------------------------------------------------------------
 # X3 / X4 monitors on streams
 # ----------------------------------------------------------------------------
@@ -594,7 +715,7 @@ def zscore(ref, X):
     return (lq - ref["mu"]) / ref["sd"]
 
 
-def build_ctx(pk, k):
+def build_ctx(pk, k, spk=True):
     """Monitor references for fold k (both modes): clip-level CONTENT / QD and speaker-adaptive SPK."""
     tr, _ = pk.folds_full[k]
     actor = pk.actor
@@ -609,6 +730,8 @@ def build_ctx(pk, k):
             ref_e = dict(model=e["model"], theta=e["theta"], mu=e["mu"], sd=e["sd"])
             ctx.zc["clean"][(kind, ch)] = {mc: zscore(ref_c, X[mc]) for mc in X}
             ctx.zc["env"][(kind, ch)] = {mc: zscore(ref_e, X[mc]) for mc in X}
+        if not spk:
+            continue
         Fc = ctx.bank[("CONTENT", ch)]["clean"]
         Fd = ctx.bank[("CONTENT", ch)][mc_tr]
         floor = 1e-3 * Fc[tr].std(0)
@@ -639,8 +762,34 @@ def gather(table, mcp, rows):
     return out
 
 
+def blocked_stream_mosei(pk, te, k, s):
+    """MOSEI S4 stream: the fold's videos in random order, each video's clips contiguous (the recording
+    changes every 1-3 clips). If one pass gives fewer than 480 clips, the videos are drawn again in a second
+    random order (the fold's clips repeat); the stream is cut at 480 clips. Returns clips and video bounds."""
+    rng = np.random.default_rng([SEED, 83, k, s])
+    vids = np.unique(pk.actor[te])
+    parts, sizes, total = [], [], 0
+    while total < MOSEI_STREAM:
+        for v in rng.permutation(vids):
+            cv = rng.permutation(te[pk.actor[te] == v])
+            parts.append(cv)
+            sizes.append(len(cv))
+            total += len(cv)
+    clips = np.concatenate(parts)[:MOSEI_STREAM]
+    bounds, start = [], 0
+    for n in sizes:
+        if start >= MOSEI_STREAM:
+            break
+        end = min(start + n, MOSEI_STREAM)
+        bounds.append((start, end))
+        start = end
+    return clips, bounds
+
+
 def blocked_stream(pk, te, k, s):
     """Speaker-blocked clean stream of 480 clips with session bounds (start, end)."""
+    if pk.name == "mosei":
+        return blocked_stream_mosei(pk, te, k, s)
     rng = np.random.default_rng([SEED, 81, k, s])
     if pk.name == "ravdess":
         acts1, p1 = I.block_presentation(te, pk.actor, rng)
@@ -694,7 +843,8 @@ def build_streams(pk, k, seeds):
             out.append(make_stream(pk, "S1", CONDS[ci], k, s, clips, conds, h, None))
         clips, sess = blocked_stream(pk, te, k, s)
         T = len(clips)
-        out.append(make_stream(pk, "S4", "speaker-blocked", k, s, clips, np.zeros(T, int), None, sess))
+        out.append(make_stream(pk, "S4", "video-blocked" if pk.name == "mosei" else "speaker-blocked", k, s,
+                               clips, np.zeros(T, int), None, sess))
         for ci in range(1, len(CONDS)):
             onset = int(np.random.default_rng([SEED, 91, k, s, ci]).integers(ONSET_LO, ONSET_HI + 1))
             conds = np.where(np.arange(T) >= onset, ci, 0)
@@ -779,12 +929,27 @@ def stream_metrics(eA, eV, deg, onset, single):
                 delay=float(dpos[0] - onset) if detected else np.nan, has_post=bool(post), attrib=attrib)
 
 
-def x3_worker(pk, k, seeds):
-    ctx = build_ctx(pk, k)
+def p99_worker(pk, k):
+    """Per-clip P99 flag rate on the clean test clips of fold k (monitor fitted on the training clips)."""
+    tr, te = pk.folds_full[k]
+    bank = load_bank(pk, clean_only=True)
+    rows = []
+    for kind in ("CONTENT", "QD"):
+        for ch in CH:
+            X = bank[(kind, ch)]["clean"]
+            m = Q.monitor_fold(X, tr, pk.actor)
+            lq = np.log(Q.monitor_d(m["model"], X[te]) / m["theta"]["p99"])
+            rows.append(dict(corpus=pk.name, monitor=kind, channel=ch, fold=k + 1, n_test_clips=int(len(te)),
+                             flag_rate=float(np.mean(lq > 0))))
+    return rows
+
+
+def x3_worker(pk, k, seeds, mons=MONS):
+    ctx = build_ctx(pk, k, spk=pk.name != "mosei")
     rows = []
     for st in build_streams(pk, k, seeds):
         deg = deg_truth(st)
-        for mon in MONS:
+        for mon in mons:
             if mon in SPK_MONS and st["sess"] is None:
                 continue
             eA, eV = traces(ctx, st, mon, "clean")
@@ -831,11 +996,13 @@ def choose_monitor(x3_all):
     return best, scores
 
 
-def x4_worker(pk, k, mon, seeds, LPS):
-    ctx = build_ctx(pk, k)
+def x4_worker(pk, k, mon, seeds, LPS, scen=None):
+    ctx = build_ctx(pk, k, spk=pk.name != "mosei")
     y = pk.y_main
     rows = []
     for st in build_streams(pk, k, seeds):
+        if scen is not None and st["scn"] not in scen:
+            continue
         if mon in SPK_MONS and st["sess"] is None:
             continue
         T = len(st["clips"])
@@ -1000,8 +1167,113 @@ def make_figures():
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
-def update_summary(section, corpus, value):
-    path = CFG.res / "ext_summary.json"
+def make_mosei_figures():
+    """ext_mosei.pdf: F-all accuracy by condition (clean-trained vs MCT) and monitor detection vs false marks.
+    ext_crosscorpus_mosei.pdf: four-class cross-corpus accuracy with the within-corpus comparators."""
+    style()
+    CFG.fig.mkdir(parents=True, exist_ok=True)
+
+    def load(name):
+        p = CFG.res / name
+        return pd.read_csv(p) if p.exists() else None
+
+    x1 = load("ext_mosei_x1_within.csv")
+    x3 = load("ext_mosei_x3_monitors.csv")
+    if x1 is not None:
+        conds = [c for c in MOSEI_COND_ORDER if (x1.condition == c).any()]
+        npan = 2 if x3 is not None else 1
+        fig, axes = plt.subplots(npan, 1, figsize=(3.4, 2.3 * npan + 0.3), squeeze=False)
+        ax = axes[0, 0]
+        w = 0.38
+        for i, (mode, col, lab) in enumerate([("clean", PAL["blue"], "clean-trained"), ("mct", PAL["vermil"], "MCT")]):
+            vals, lo, hi = [], [], []
+            for cond in conds:
+                r = x1[(x1.training == mode) & (x1.model == "F-all") & (x1.condition == cond)]
+                a = float(r.accuracy.iloc[0]) if len(r) else np.nan
+                vals.append(a)
+                lo.append(a - float(r.acc_ci_low.iloc[0]) if len(r) else 0)
+                hi.append(float(r.acc_ci_high.iloc[0]) - a if len(r) else 0)
+            xs = np.arange(len(conds)) + (i - 0.5) * w
+            ax.bar(xs, vals, w, color=col, label=lab, yerr=[lo, hi], capsize=1.2, error_kw=dict(lw=0.5),
+                   hatch="//" if mode == "mct" else None, edgecolor="white")
+        ax.axhline(0.25, color=PAL["grey"], ls=":", lw=0.8)
+        ax.set_xticks(np.arange(len(conds)))
+        ax.set_xticklabels(conds, rotation=40, ha="right")
+        ax.set_ylim(0, 1)
+        ax.set_ylabel("F-all accuracy (4 classes)")
+        ax.set_title("CMU-MOSEI: clean-trained vs MCT")
+        ax.legend(frameon=False, ncol=2, loc="upper right")
+        if x3 is not None:
+            ax = axes[1, 0]
+            styles = {"CONTENT": (PAL["blue"], "o"), "QD": (PAL["orange"], "s")}
+            for mon in MOSEI_MONS:
+                g5 = x3[(x3.monitor == mon) & (x3.scenario == "S5")]
+                g4 = x3[(x3.monitor == mon) & (x3.scenario == "S4")]
+                if g5.empty or g4.empty:
+                    continue
+                col, mk = styles[mon]
+                ax.scatter(float(g4.false_marks_per_1000.iloc[0]), float(g5.detection_rate.mean()),
+                           color=col, marker=mk, s=28, label=mon, zorder=3)
+            ax.set_xlabel("false marks per 1000 clips (S4, video-blocked clean)")
+            ax.set_ylabel("detection rate (S5, mean)")
+            ax.set_ylim(0, 1.02)
+            ax.grid(alpha=0.3, lw=0.4)
+            ax.legend(frameon=False, loc="lower right")
+        fig.tight_layout()
+        fig.savefig(CFG.fig / "ext_mosei.pdf")
+        plt.close(fig)
+        log("wrote ext_mosei.pdf")
+
+    x2 = load("ext_mosei_x2_crosscorpus.csv")
+    if x2 is not None:
+        panels = [
+            ("target: CMU-MOSEI", [("within-corpus", "within:mosei4", "within-clean", PAL["blue"]),
+                                   ("from RAVDESS", "ravdess->mosei", "cross-clean", PAL["orange"]),
+                                   ("from CREMA-D", "cremad->mosei", "cross-clean", PAL["green"])]),
+            ("target: RAVDESS (4 classes)", [("within-corpus", "within:ravdess4", "within-clean", PAL["blue"]),
+                                             ("from MOSEI", "mosei->ravdess", "cross-clean", PAL["orange"])]),
+            ("target: CREMA-D (4 classes)", [("within-corpus", "within:cremad4", "within-clean", PAL["blue"]),
+                                             ("from MOSEI", "mosei->cremad", "cross-clean", PAL["orange"])]),
+        ]
+        models = ["A1", "V1", "F-all"]
+        fig, axes = plt.subplots(len(panels), 1, figsize=(3.4, 2.0 * len(panels) + 0.4), squeeze=False)
+        for ax, (title, series) in zip(axes[:, 0], panels):
+            w = 0.8 / len(series)
+            for i, (lab, direction, setting, col) in enumerate(series):
+                d = x2[(x2.direction == direction) & (x2.setting == setting) & (x2.condition == "clean")]
+                vals, lo, hi = [], [], []
+                for m in models:
+                    r = d[d.model == m]
+                    a = float(r.accuracy.iloc[0]) if len(r) else np.nan
+                    vals.append(a)
+                    lo.append(a - float(r.acc_ci_low.iloc[0]) if len(r) else 0)
+                    hi.append(float(r.acc_ci_high.iloc[0]) - a if len(r) else 0)
+                xs = np.arange(len(models)) + (i - (len(series) - 1) / 2) * w
+                ax.bar(xs, vals, w, color=col, label=lab, yerr=[lo, hi], capsize=1.2, error_kw=dict(lw=0.5))
+            ax.axhline(0.25, color=PAL["grey"], ls=":", lw=0.8)
+            ax.set_xticks(np.arange(len(models)))
+            ax.set_xticklabels(models)
+            ax.set_ylim(0, 1)
+            ax.set_ylabel("accuracy (clean)")
+            ax.set_title(title)
+            ax.legend(frameon=False, ncol=len(series), loc="upper center", bbox_to_anchor=(0.5, -0.12))
+        fig.tight_layout()
+        fig.savefig(CFG.fig / "ext_crosscorpus_mosei.pdf")
+        plt.close(fig)
+        log("wrote ext_crosscorpus_mosei.pdf")
+
+
+def out_name(corpus, base):
+    """Results file for a corpus: RAVDESS and CREMA-D keep the ext_* names, MOSEI writes ext_mosei_*."""
+    return base if corpus != "mosei" else base.replace("ext_", "ext_mosei_", 1)
+
+
+def summary_name(corpus):
+    return "ext_summary.json" if corpus != "mosei" else "ext_mosei_summary.json"
+
+
+def update_summary(section, corpus, value, name="ext_summary.json"):
+    path = CFG.res / name
     data = json.loads(path.read_text()) if path.exists() else {}
     data.setdefault(section, {})[corpus] = Q.to_py(value)
     path.write_text(json.dumps(data, indent=1))
@@ -1009,28 +1281,29 @@ def update_summary(section, corpus, value):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--corpus", choices=["ravdess", "cremad", "both"], default="ravdess")
+    ap.add_argument("--corpus", choices=["ravdess", "cremad", "mosei", "both", "all"], default="ravdess")
     ap.add_argument("--part", choices=["x1", "x2", "x3", "x4", "all"], default="all")
     ap.add_argument("--seeds", type=int, default=R.N_DRIFT_SEEDS)
     ap.add_argument("--n-jobs", type=int, default=2)
     ap.add_argument("--feat-ravdess", type=Path, default=CFG.feat_ravdess)
     ap.add_argument("--feat-cremad", type=Path, default=CFG.feat_cremad)
+    ap.add_argument("--feat-mosei", type=Path, default=CFG.feat_mosei)
     ap.add_argument("--cache-dir", type=Path, default=CFG.cache)
     ap.add_argument("--results-dir", type=Path, default=CFG.res)
     ap.add_argument("--fig-dir", type=Path, default=CFG.fig)
     args = ap.parse_args()
-    CFG.feat_ravdess, CFG.feat_cremad = args.feat_ravdess, args.feat_cremad
+    CFG.feat_ravdess, CFG.feat_cremad, CFG.feat_mosei = args.feat_ravdess, args.feat_cremad, args.feat_mosei
     CFG.cache, CFG.res, CFG.fig = args.cache_dir, args.results_dir, args.fig_dir
     CFG.seeds, CFG.n_jobs = args.seeds, args.n_jobs
     CFG.cache.mkdir(parents=True, exist_ok=True)
     CFG.res.mkdir(parents=True, exist_ok=True)
     log(f"corpus={args.corpus} part={args.part} seeds={CFG.seeds} n_jobs={CFG.n_jobs}")
 
-    corpora = ["ravdess", "cremad"] if args.corpus == "both" else [args.corpus]
+    corpora = {"both": ["ravdess", "cremad"], "all": ["ravdess", "cremad", "mosei"]}.get(args.corpus, [args.corpus])
+    feats = {"ravdess": CFG.feat_ravdess, "cremad": CFG.feat_cremad, "mosei": CFG.feat_mosei}
     for n in corpora:
-        feat = CFG.feat_ravdess if n == "ravdess" else CFG.feat_cremad
-        if not (feat / "meta.csv").exists():
-            raise SystemExit(f"{n} features not found at {feat} (meta.csv missing); nothing was written")
+        if not (feats[n] / "meta.csv").exists():
+            raise SystemExit(f"{n} features not found at {feats[n]} (meta.csv missing); nothing was written")
     parts = ["x1", "x2", "x3", "x4"] if args.part == "all" else [args.part]
     packs = {}
     for name in corpora:
@@ -1052,11 +1325,12 @@ def main():
         for n in corpora:
             tk = tasks[n]
             x1, fus, casc, gap, summ = run_x1(tk)
-            save_rows(x1, "ext_x1_within.csv", ["corpus", "task", "training", "model", "condition"])
-            save_rows(fus, "ext_x1_fusion.csv", ["corpus", "training", "condition"])
-            save_rows(casc, "ext_x1_cascade.csv", ["corpus", "condition"])
-            save_rows(gap, "ext_x1_fairness.csv", ["corpus", "training", "condition"])
-            update_summary("x1", n, summ)
+            save_rows(x1, out_name(n, "ext_x1_within.csv"), ["corpus", "task", "training", "model", "condition"])
+            save_rows(fus, out_name(n, "ext_x1_fusion.csv"), ["corpus", "training", "condition"])
+            save_rows(casc, out_name(n, "ext_x1_cascade.csv"), ["corpus", "condition"])
+            if n != "mosei":
+                save_rows(gap, "ext_x1_fairness.csv", ["corpus", "training", "condition"])
+            update_summary("x1", n, summ, summary_name(n))
             if n == "ravdess" and CFG.feat_ravdess == R.FEAT:
                 ref = pd.read_csv(R.RES / "main_results.csv").set_index("system")
                 ours = float(x1[(x1.training == "clean") & (x1.model == "F-all") & (x1.condition == "clean")].accuracy.iloc[0])
@@ -1084,51 +1358,84 @@ def main():
                         rows.append(dict(direction="within:ravdess6", setting=f"within-{mode}",
                                          target="ravdess", model=name, condition=c, **row))
             save_rows(pd.DataFrame(rows), "ext_x2_crosscorpus.csv", ["direction"])
-        else:
+        elif "mosei" not in corpora:
             log("X2 needs the RAVDESS corpus (comparator and cross-corpus rows); skipped")
+        if "mosei" in corpora:
+            for n in ("ravdess", "cremad"):
+                if n not in packs:
+                    if not (feats[n] / "meta.csv").exists():
+                        raise SystemExit(f"X2 on MOSEI needs {n} features at {feats[n]}; nothing was written")
+                    packs[n] = make_pack(n)
+            x2m, cinfo_m, msm = run_cross_mosei(packs)
+            save_rows(x2m, "ext_mosei_x2_crosscorpus.csv", ["direction"])
+            save_rows(msm, "ext_mosei_x2_monitor_shift.csv", ["direction", "monitor", "channel"])
+            update_summary("x2", "mosei", cinfo_m, "ext_mosei_summary.json")
     if "x3" in parts:
-        allrows = []
         for n in corpora:
             pk = packs[n]
-            log(f"X3 {n}: streams and monitors on {len(pk.folds_full)} folds, {CFG.seeds} seeds")
-            res_rows = Parallel(n_jobs=CFG.n_jobs)(delayed(x3_worker)(pk, k, CFG.seeds)
+            mons = MOSEI_MONS if n == "mosei" else MONS
+            log(f"X3 {n}: streams and monitors on {len(pk.folds_full)} folds, {CFG.seeds} seeds, monitors {mons}")
+            res_rows = Parallel(n_jobs=CFG.n_jobs)(delayed(x3_worker)(pk, k, CFG.seeds, mons)
                                                    for k in range(len(pk.folds_full)))
             df = pd.DataFrame([r for rows in res_rows for r in rows])
-            df.to_csv(CFG.res / f"ext_x3_streams_{n}.csv.gz", index=False, compression="gzip")
+            stream_file = "ext_mosei_x3_streams.csv.gz" if n == "mosei" else f"ext_x3_streams_{n}.csv.gz"
+            df.to_csv(CFG.res / stream_file, index=False, compression="gzip")
             agg = aggregate_x3(df, n)
-            allrows.append(agg)
-            save_rows(agg, "ext_x3_monitors.csv", ["corpus"])
+            save_rows(agg, out_name(n, "ext_x3_monitors.csv"), ["corpus"])
+            if n == "mosei":
+                flag_rows = Parallel(n_jobs=CFG.n_jobs)(delayed(p99_worker)(pk, k)
+                                                        for k in range(len(pk.folds_full)))
+                save_rows(pd.DataFrame([r for rows in flag_rows for r in rows]), "ext_mosei_x3_p99_flags.csv",
+                          ["corpus", "monitor", "channel", "fold"])
+                vid_sizes = pd.Series(pk.actor).value_counts()
+                info = dict(seeds_per_fold=CFG.seeds, folds=len(pk.folds_full), monitors=mons,
+                            spk="not applicable: no speaker sessions; videos with fewer than 12 clips cannot be enrolled",
+                            videos=int(len(vid_sizes)), videos_under_12_clips=int((vid_sizes < 12).sum()),
+                            n_videos_per_fold=[int(len(np.unique(pk.actor[te]))) for _, te in pk.folds_full])
+            else:
+                info = dict(seeds_per_fold=CFG.seeds, folds=len(pk.folds_full),
+                            test_speakers_under_24_clips_per_fold=pk.under24)
             if n == "ravdess":
                 best, scores = choose_monitor(pd.read_csv(CFG.res / "ext_x3_monitors.csv"))
                 (CFG.res / "ext_x3_choice.json").write_text(json.dumps(
                     dict(chosen=best, rule="score = mean S5 detection rate over degraded conditions "
                          "minus S4 share of streams with any false mark", scores=scores), indent=1))
                 log(f"X3 monitor chosen on RAVDESS: {best} {scores}")
-            update_summary("x3", n, dict(seeds_per_fold=CFG.seeds, folds=len(pk.folds_full),
-                                         test_speakers_under_24_clips_per_fold=pk.under24))
+            update_summary("x3", n, info, summary_name(n))
     if "x4" in parts:
-        choice_path = CFG.res / "ext_x3_choice.json"
-        if not choice_path.exists():
-            raise SystemExit("X4 needs ext_x3_choice.json (run X3 on RAVDESS first)")
-        mon = json.loads(choice_path.read_text())["chosen"]
-        log(f"X4 gating with monitor {mon}")
+        mon_rav = None
+        if any(n != "mosei" for n in corpora):
+            choice_path = CFG.res / "ext_x3_choice.json"
+            if not choice_path.exists():
+                raise SystemExit("X4 needs ext_x3_choice.json (run X3 on RAVDESS first)")
+            mon_rav = json.loads(choice_path.read_text())["chosen"]
+            log(f"X4 gating with monitor {mon_rav}")
         for n in corpora:
             pk = packs[n]
             tk = tasks[n]
+            mon = "QD" if n == "mosei" else mon_rav
+            scen = ("S1", "S4") if n == "mosei" else None
+            log(f"X4 {n}: gating with monitor {mon}" + (f", scenarios {scen}" if scen else ""))
             res = fit_within(tk)
             P, _ = assemble(pk.reg, res, [te for _, te in tk["folds"]], pk.n, tk["K"])
             LPS = {m: {t: np.stack([np.log(np.clip(P[m][t][c], 1e-12, 1.0)) for c in pk.reg]) for t in MODELS}
                    for m in MODES}
             pk.y_main = tk["y"]
-            out = Parallel(n_jobs=CFG.n_jobs)(delayed(x4_worker)(pk, k, mon, CFG.seeds, LPS)
+            out = Parallel(n_jobs=CFG.n_jobs)(delayed(x4_worker)(pk, k, mon, CFG.seeds, LPS, scen)
                                               for k in range(len(pk.folds_full)))
             df = pd.DataFrame([r for rows in out for r in rows])
             agg = aggregate_x4(df, n)
-            save_rows(agg, "ext_x4_gating.csv", ["corpus"])
-            update_summary("x4", n, dict(monitor=mon, streams_per_variant=int((df.variant == VARIANTS[0][0]).sum()),
-                                         variants=[v[0] for v in VARIANTS]))
+            save_rows(agg, out_name(n, "ext_x4_gating.csv"), ["corpus"])
+            info = dict(monitor=mon, streams_per_variant=int((df.variant == VARIANTS[0][0]).sum()),
+                        variants=[v[0] for v in VARIANTS])
+            if scen:
+                info["scenarios"] = list(scen)
+            update_summary("x4", n, info, summary_name(n))
     log(f"parts done in {time.perf_counter() - t_start:.1f}s")
-    make_figures()
+    if any(n in BASE_CORPORA for n in corpora):
+        make_figures()
+    if "mosei" in corpora:
+        make_mosei_figures()
 
 
 if __name__ == "__main__":
