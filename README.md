@@ -21,7 +21,8 @@ Manuscript and code for a submission to the *Information Systems Frontiers* spec
 | `code/run_envelope.py` | Cycle 4: multi-condition training with envelope-aware gating |
 | `code/descriptive_stats.py` | Corpus statistics and zero-shot CLIP confusion matrix |
 | `code/extract_extension.py` | Quality descriptors, realistic degradations (DEMAND noise, H.264) and CREMA-D feature extraction |
-| `code/run_extension_exp.py` | Cycle 5: CREMA-D replication, cross-corpus test, content / quality-descriptor / speaker-adaptive monitors, gating |
+| `code/run_extension_exp.py` | Cycle 5: CREMA-D replication, cross-corpus test, content / quality-descriptor / speaker-adaptive monitors, gating; Cycle 6 with `--corpus mosei` |
+| `code/mosei_select.py`, `code/mosei_download.py` | Cycle 6: selection of the CMU-MOSEI subset from the SDK labels and partial download of the selected clips |
 | `code/diag_spk.py` | Diagnostic of the speaker-adaptive monitor |
 | `code/time_qd.py` | CPU time of the quality descriptors |
 | `code/SPEC_*.md` | Specifications of the extraction and evaluation protocol |
@@ -34,7 +35,9 @@ Manuscript and code for a submission to the *Information Systems Frontiers* spec
    For Cycle 5, download the CREMA-D videos (https://github.com/CheyneyComputerScience/CREMA-D) listed in `code/cremad_subset_files.txt` (copy it to `/home/user/data/cremad/subset_files.txt`)
    into `/home/user/data/cremad/flv/` with `VideoDemographics.csv` in `/home/user/data/cremad/meta/`, and the DEMAND
    `PCAFETER` and `STRAFFIC` recordings (https://doi.org/10.5281/zenodo.1227121) into `/home/user/data/demand/`.
-2. Install Python 3 with `torch`, `torchvision`, `transformers`, `librosa`, `opencv-python-headless`, `scikit-learn`, `scipy`, `pandas`, `matplotlib`, `river`, and `ffmpeg`.
+   For Cycle 6, download the CMU-MOSEI label file `CMU_MOSEI_Labels.csd` (CMU Multimodal SDK) as `/home/user/data/mosei/Labels.csd`, and the segment list `label.csv` of the MMSA mirror (see `code/SPEC_mosei.md`) into the same folder;
+   `mosei_select.py` writes the subset (also provided as `code/mosei_subset.csv`) and `mosei_download.py` reads only the selected clips from the raw-video archive.
+2. Install Python 3 with `h5py`, `remotezip`, `zipfile-deflate64`, `torch`, `torchvision`, `transformers`, `librosa`, `opencv-python-headless`, `scikit-learn`, `scipy`, `pandas`, `matplotlib`, `river`, and `ffmpeg`.
 3. Run, from the repository root:
 
 ```bash
@@ -55,6 +58,11 @@ python3 code/extract_extension.py --part cremad --workers 2
 python3 code/extract_extension.py --part cremad --merge
 python3 code/run_extension_exp.py --corpus both --part all
 cd code && python3 diag_spk.py ravdess cremad && python3 time_qd.py && cd ..
+python3 code/mosei_select.py
+python3 code/mosei_download.py --threads 4
+python3 code/extract_extension.py --part mosei --workers 4
+python3 code/extract_extension.py --part mosei --merge
+python3 code/run_extension_exp.py --corpus mosei --part all
 ```
 
 4. Build the manuscript:
@@ -63,5 +71,5 @@ cd code && python3 diag_spk.py ravdess cremad && python3 time_qd.py && cd ..
 cd manuscript && pdflatex manuscript && bibtex manuscript && pdflatex manuscript && pdflatex manuscript
 ```
 
-Feature extraction takes about two hours on four CPU cores, and the Cycle 5 extraction about four more hours; all evaluation scripts together run in about twenty minutes.
+Feature extraction takes about two hours on four CPU cores, and the Cycle 5 extraction about four more hours, and the Cycle 6 extraction about seven hours; all evaluation scripts together run in about twenty minutes.
 All random processes are seeded (seed 2026).
