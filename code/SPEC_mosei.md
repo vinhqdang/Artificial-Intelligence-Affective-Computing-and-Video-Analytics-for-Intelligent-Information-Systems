@@ -24,7 +24,7 @@
   (exact functions as for CREMA-D).
 - Output `/home/user/data/features_mosei/` with the same file naming as CREMA-D; `meta.csv` with clip_id,
   video_id, clip_num, split, emotion, cls, dur, duration_s, n_frames, width, height, face_rate_<vcond>;
-  `timings.csv` for clean; `excluded.csv`. Resumable per block of 150 clips; 4 workers x 1 torch thread
+  `timings.csv` for clean; `excluded.csv`. Resumable per block of 50 clips; 4 workers x 1 torch thread
   (nothing else runs) unless memory is short.
 - Verify: no NaN/Inf, row counts, face-detection rates (expect < 1 for in-the-wild video; report distribution),
   QD shifts in the expected direction, timing summary.
